@@ -34,13 +34,12 @@ window.onload = function init()
 	
 	
 	
-	p = new vec2(0, 0);
-	for(var i = 0; i < 500; i++)
-		points.push(p);
+		
+	var maxVertices = 1000;
     
     var bufferId = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
-	gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
+	gl.bufferData( gl.ARRAY_BUFFER, maxVertices*8, gl.STATIC_DRAW );
 	
 	points = [];
 
@@ -52,6 +51,10 @@ window.onload = function init()
 	
 	// Set up event listener	
 	canvas.addEventListener ("click", function(event) {
+		if (numDevices > 10) {
+			alert('You cant draw anymore');
+			return;
+		}
 		var point = vec2 (-1 + 2*(event.clientX-mouseSize)/canvas.width, -1 + 2*(canvas.height-event.clientY+mouseSize)/canvas.height);
 		switch(TYPE) {
 			case 0:
