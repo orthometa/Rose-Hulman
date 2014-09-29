@@ -73,15 +73,12 @@ window.onload = function init()
 				drawOr(point[0], point[1]);
 				break;
 			case 1:
-				//verify if it is possible
 				drawAnd(point[0], point[1]);
 				break;
 			case 2:
-				//verify if it is possible
 				drawNot(point[0], point[1]);
 				break;
 			case 3:
-				//verify if it is possible
 				linePoints.push(point);
 				if (linePoints.length >= 2) {
 					drawLine(linePoints);
