@@ -3,7 +3,9 @@ Circuit drawer made by Andreas Palsson and Igor Ramon
 */
 
 var gl;
-var points =[];
+var points = [];
+var usedSpaceX = [];
+var usedSpaceY = [];
 var numPoints = 0;
 var maxPoints = 1000;
 var mouseSize = 8;
@@ -14,7 +16,7 @@ var linePoints = [];
 
 var TYPE = 0;
 var numDevices = 0;
-var maxDevices = 20;
+var maxDevices = 30;
 window.onload = function init()
 {
     canvas = document.getElementById( "gl-canvas" );
@@ -26,7 +28,7 @@ window.onload = function init()
     //  Configure WebGL
     //
     gl.viewport( 0, 0, canvas.width, canvas.height );
-    gl.clearColor( 0.78, 0.78, 0.78, 1.0 );
+    gl.clearColor( 0.79, 0.79, 0.79, 1.0 );
     	
     //  Load shaders and initialize attribute buffers
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
@@ -52,18 +54,34 @@ window.onload = function init()
 			alert('You cant draw anymore');
 			return;
 		}
+		
 		var point = vec2 (-1 + 2*(event.clientX-mouseSize)/canvas.width, -1 + 2*(canvas.height-event.clientY+mouseSize)/canvas.height);
+		
+		if(TYPE!=3) {
+			for(var i=0; i < numDevices; i++) {
+				if(usedSpaceX[i]-0.3 < point[0] && usedSpaceX[i]+0.3 > point[0]) {
+					if(usedSpaceY[i]-0.3 < point[1] && usedSpaceY[i]+0.3 > point[1]){
+						alert('This place already have an element');
+						return;
+					}
+				}
+			}
+		}
+		
 		switch(TYPE) {
 			case 0:
 				drawOr(point[0], point[1]);
 				break;
 			case 1:
+				//verify if it is possible
 				drawAnd(point[0], point[1]);
 				break;
 			case 2:
+				//verify if it is possible
 				drawNot(point[0], point[1]);
 				break;
 			case 3:
+				//verify if it is possible
 				linePoints.push(point);
 				if (linePoints.length >= 2) {
 					drawLine(linePoints);
@@ -101,10 +119,8 @@ window.onload = function init()
 		}
 	})
 	
-	
 	render();
 };
-
 
 function drawLine(linePoints) {
 	points.push(linePoints[0]);
@@ -113,8 +129,7 @@ function drawLine(linePoints) {
 	render();
 }
 function drawNot(x, y) {
-	//var points = [];
-	
+
 	var p = new vec2(x-0.125, y-0.125);
 	points.push(p);
 	
@@ -159,13 +174,15 @@ function drawNot(x, y) {
 	p = new vec2(x+0.125, y);
 	points.push(p);	
 	
+	usedSpaceX.push(x);
+	usedSpaceY.push(y);
+	
 	console.log("drawnot");
 	gl.bufferSubData (gl.ARRAY_BUFFER, 0, flatten(points));
 	numDevices++;
 	render();
 }
 function drawAnd(x, y) {
-	//var points = [];
 	
 	var p = new vec2(x-0.125, y-0.125);
 	points.push(p);
@@ -209,6 +226,9 @@ function drawAnd(x, y) {
 	p = new vec2(x-0.125, y-0.125);
 	points.push(p);	
 	
+	usedSpaceX.push(x);
+	usedSpaceY.push(y);
+	
 	console.log("drawand");
 	gl.bufferSubData (gl.ARRAY_BUFFER, 0, flatten(points));
 	numDevices++;
@@ -216,8 +236,6 @@ function drawAnd(x, y) {
 }
 
 function drawOr(x, y) {
-	
-//	var points = [];
 	
 	var p = new vec2(x, y+0.125);
 	points.push(p);
@@ -262,19 +280,9 @@ function drawOr(x, y) {
 	p = new vec2(x, y+0.125);
 	points.push(p);
 	
-	
-	/*
-	p = new vec2(x+0.125, y+0.3);
-	points.push(p);
-	
-	p = new vec2(x+0.08, y+0.225);
-	points.push(p);
-	
-	p = new vec2(x+0.15, y+0.225);
-	points.push(p);
-	*/
-	
-	
+	usedSpaceX.push(x);
+	usedSpaceY.push(y);	
+		
 	console.log("drawor");
 	gl.bufferSubData (gl.ARRAY_BUFFER, 0, flatten(points));
 	numDevices++;
@@ -285,6 +293,5 @@ function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
 	
 	gl.drawArrays( gl.LINES, 0, points.length );
-	//requestAnimFrame (render);
 
 }
