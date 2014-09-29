@@ -1,8 +1,11 @@
+/*
+Circuit drawer made by Andreas Palsson and Igor Ramon
+*/
 
 var gl;
 var points =[];
 var numPoints = 0;
-var maxPoints = 100;
+var maxPoints = 1000;
 var mouseSize = 8;
 var canvas;
 
@@ -11,6 +14,7 @@ var linePoints = [];
 
 var TYPE = 0;
 var numDevices = 0;
+var maxDevices = 20;
 window.onload = function init()
 {
     canvas = document.getElementById( "gl-canvas" );
@@ -23,18 +27,11 @@ window.onload = function init()
     //
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
-    
-
-	
-	
+    	
     //  Load shaders and initialize attribute buffers
-    
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
-	
-	
-	
-		
+			
 	var maxVertices = 1000;
     
     var bufferId = gl.createBuffer();
@@ -51,7 +48,7 @@ window.onload = function init()
 	
 	// Set up event listener	
 	canvas.addEventListener ("click", function(event) {
-		if (numDevices > 10) {
+		if (numDevices > maxDevices) {
 			alert('You cant draw anymore');
 			return;
 		}
@@ -108,28 +105,6 @@ window.onload = function init()
 	render();
 };
 
-window.onkeydown = function (e) {
-	return;
-	if(linePoints.length == 1) {
-		alert('FINISH DRAWING YOUR LINE');
-		return;
-	}
-	
-    var code = e.keyCode ? e.keyCode : e.which;
-    if (code === 49) { //1 
-		TYPE = 0;
-        alert('NOW DRAWING OR');
-    } else if (code === 50) { //2
-		TYPE = 1;
-        alert('NOW DRAWING AND');
-    } else if (code === 51) { //3
-		TYPE = 2;
-        alert('NOW DRAWING NOT');
-    } else if (code == 52) {
-		TYPE = 3;
-		alert('NOW DRAWING LINES');
-	}
-};
 
 function drawLine(linePoints) {
 	points.push(linePoints[0]);
@@ -140,34 +115,49 @@ function drawLine(linePoints) {
 function drawNot(x, y) {
 	//var points = [];
 	
-	var p = new vec2(x, y);
+	var p = new vec2(x-0.125, y-0.125);
 	points.push(p);
 	
-	
-	p = new vec2(x, y+0.5);
+	p = new vec2(x-0.125, y+0.125);
 	points.push(p);	
 	points.push(p);
 		
-	p = new vec2(x+0.25, y+0.25);
+	p = new vec2(x+0.125, y);
 	points.push(p);
 	points.push(p);
 	
-	p = new vec2(x, y);
+	p = new vec2(x-0.125, y-0.125);
 	points.push(p);
 	
-	
-	p = new vec2(x+0.125, y+0.15);
+	p = new vec2(x+0.125, y);
 	points.push(p);
 	
-	p = new vec2(x+0.125, y+0.3);
+	p = new vec2(x+0.142, y+0.018);
+	points.push(p);
 	points.push(p);
 	
-	p = new vec2(x+0.08, y+0.225);
+	p = new vec2(x+0.167, y+0.018);
+	points.push(p);	
 	points.push(p);
 	
-	p = new vec2(x+0.15, y+0.225);
+	p = new vec2(x+0.175, y+0.0043);
+	points.push(p);	
 	points.push(p);
 	
+	p = new vec2(x+0.175, y-0.0043);
+	points.push(p);	
+	points.push(p);
+	
+	p = new vec2(x+0.167, y-0.018);
+	points.push(p);	
+	points.push(p);
+	
+	p = new vec2(x+0.142, y-0.018);
+	points.push(p);
+	points.push(p);
+	
+	p = new vec2(x+0.125, y);
+	points.push(p);	
 	
 	console.log("drawnot");
 	gl.bufferSubData (gl.ARRAY_BUFFER, 0, flatten(points));
@@ -177,21 +167,47 @@ function drawNot(x, y) {
 function drawAnd(x, y) {
 	//var points = [];
 	
-	var p = new vec2(x, y);
+	var p = new vec2(x-0.125, y-0.125);
 	points.push(p);
 	
-	p = new vec2(x, y+0.5);
+	p = new vec2(x-0.125, y+0.125);
 	points.push(p);	
 	points.push(p);
-		
-	p = new vec2(x+0.25, y+0.25);
+	
+	p = new vec2(x, y+0.125);
 	points.push(p);
 	points.push(p);
 	
-	p = new vec2(x, y);
+	p = new vec2(x+0.063, y+0.108);
+	points.push(p);
 	points.push(p);
 	
+	p = new vec2(x+0.095, y+0.08);
+	points.push(p);
+	points.push(p);
 	
+	p = new vec2(x+0.123, y+0.021);
+	points.push(p);
+	points.push(p);
+	
+	p = new vec2(x+0.123, y-0.021);
+	points.push(p);
+	points.push(p);
+	
+	p = new vec2(x+0.095, y-0.08);
+	points.push(p);
+	points.push(p);
+	
+	p = new vec2(x+0.063, y-0.108);
+	points.push(p);
+	points.push(p);
+	
+	p = new vec2(x, y-0.125);
+	points.push(p);	
+	points.push(p);
+	
+	p = new vec2(x-0.125, y-0.125);
+	points.push(p);	
 	
 	console.log("drawand");
 	gl.bufferSubData (gl.ARRAY_BUFFER, 0, flatten(points));
@@ -203,24 +219,51 @@ function drawOr(x, y) {
 	
 //	var points = [];
 	
-	var p = new vec2(x, y);
+	var p = new vec2(x, y+0.125);
 	points.push(p);
 	
-	p = new vec2(x, y+0.5);
+	p = new vec2(x+0.088, y+0.088);
 	points.push(p);	
 	points.push(p);
 		
-	p = new vec2(x+0.25, y+0.25);
+	p = new vec2(x+0.125, y);
 	points.push(p);
 	points.push(p);
 	
-	p = new vec2(x, y);
+	p = new vec2(x+0.088, y-0.088);
+	points.push(p);
+	points.push(p);	
+	
+	p = new vec2(x, y-0.125);
+	points.push(p);
+	points.push(p);
+	
+	p = new vec2(x-0.125, y-0.125);
+	points.push(p);
+	points.push(p);
+	
+	p = new vec2(x-0.05, y-0.0625);
+	points.push(p);
 	points.push(p);
 	
 	
-	p = new vec2(x+0.125, y+0.15);
+	p = new vec2(x-0.03, y);
+	points.push(p);
 	points.push(p);
 	
+	p = new vec2(x-0.05, y+0.0625);
+	points.push(p);
+	points.push(p);
+	
+	p = new vec2(x-0.125, y+0.125);
+	points.push(p);
+	points.push(p);
+	
+	p = new vec2(x, y+0.125);
+	points.push(p);
+	
+	
+	/*
 	p = new vec2(x+0.125, y+0.3);
 	points.push(p);
 	
@@ -229,6 +272,7 @@ function drawOr(x, y) {
 	
 	p = new vec2(x+0.15, y+0.225);
 	points.push(p);
+	*/
 	
 	
 	console.log("drawor");
@@ -244,4 +288,3 @@ function render() {
 	//requestAnimFrame (render);
 
 }
-	
