@@ -3,8 +3,8 @@ Computer-Graphics
 Andreas Palsson & Igor Ramon
 
 
-Assignment: Build a circuit drawer with WebGL
+Assignment: Build backgammon with WebGL
 
 
 TODO:
-Make the or-, not-, and and-gates prettier. The or- and and-gates are supposed to be round.
+Implement the rules.
