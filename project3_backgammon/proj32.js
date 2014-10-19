@@ -18,6 +18,9 @@ var translations = [];
 
 var firstClick = true;
 
+var dice1 = -1;
+var dice2 = -1;
+
 window.onload = function init()
 {
     var canvas = document.getElementById( "gl-canvas" );
@@ -47,6 +50,17 @@ window.onload = function init()
 	
 	drawBoard();
 	drawPieces();
+	
+
+	var d1 = document.getElementById("dice1");
+	document.getElementById("rollDices").addEventListener("click", function() { 
+		dice1 = Math.floor(Math.random() * 6) + 1; 
+		dice2 = Math.floor(Math.random() * 6) + 1;
+		document.getElementById("dice1").innerHTML = "Dice1: " + dice1;
+		document.getElementById("dice2").innerHTML = "Dice2: " + dice2;
+	});
+	
+	
 	
 	canvas.addEventListener ("click", function(event) {	
 		zeroToOne = vec2(2 * event.clientX/canvas.width - 1, -2 * event.clientY/canvas.height + 1);
@@ -85,6 +99,7 @@ window.onload = function init()
 		}
 			
 	});
+	
 };
 
 function checkIfRemoveOtherPieces(piece) {
@@ -113,19 +128,19 @@ function drawBoard() {
 	var g;
 	var b;
 	for(var i = 0; i < bufferId.numItems; i += 3) {
-	if(i < bufferId.numItems/2) {
-		if(i%2 == 0) {
-			r = 1; g = 1; b = 1; }
-		else {
-			r = 0; g = 0; b = 0; }
-	} else {
-		if(i%2 != 0) {
-			r = 1; g = 1; b = 1; }
-		else {
-			r = 0; g = 0; b = 0; }
-	}
-	gl.uniform4f(colorLocation, r, g, b, 1);
-	gl.drawArrays(gl.TRIANGLES, i, 3);
+		if(i < bufferId.numItems/2) {
+			if(i%2 == 0) {
+				r = 1; g = 1; b = 1; }
+			else {
+				r = 0; g = 0; b = 0; }
+		} else {
+			if(i%2 != 0) {
+				r = 1; g = 1; b = 1; }
+			else {
+				r = 0; g = 0; b = 0; }
+		}
+		gl.uniform4f(colorLocation, r, g, b, 1);
+		gl.drawArrays(gl.TRIANGLES, i, 3);
 	}
 }
 function drawPieces() {
