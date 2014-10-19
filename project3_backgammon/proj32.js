@@ -10,6 +10,9 @@ var pieces = [];
 var indexToMove = -1;
 var pieceToMove;
 
+var pieceWidth = 0.05;
+var pieceHeight = 0.05;
+
 var program;
 var vPosition;
 var colorLocation;
@@ -72,25 +75,31 @@ window.onload = function init()
 					indexToMove = i;
 					pieceToMove = pieces[i];
 					firstClick = false;
+					console.log("TRAFF");
 					break;
 				}			
 			}
 		} else {
-			//console.log(pieces[indexToMove].pieces[0]);
+			if(indexToMove == -1)
+				return;
+			console.log("OLD SPOT: " + pieces[indexToMove].points);
 			firstClick = true;
 			var transx = Math.round(10*(translations[indexToMove][0] + zeroToOne[0] - pieces[indexToMove].points[0]))/10;
 			var transy = Math.round(10*(translations[indexToMove][1] + zeroToOne[1] - pieces[indexToMove].points[1]))/10;
 			translations[indexToMove] = vec4(transx, transy, 0, 0);
+			console.log("TRANSLATIONS: " + translations[indexToMove][0] + ", " + translations[indexToMove][1]);
 			
 			pieces[indexToMove].points[0] = Math.round(zeroToOne[0]*10)/10;
 			pieces[indexToMove].points[1] = Math.round(zeroToOne[1]*10)/10;
-			pieces[indexToMove].points[2] = Math.round(zeroToOne[0]*10)/10 + 0.1;
-			pieces[indexToMove].points[3] = Math.round(zeroToOne[1]*10)/10 - 0.1;
+			pieces[indexToMove].points[2] = Math.round(zeroToOne[0]*10)/10 + pieceWidth;
+			pieces[indexToMove].points[3] = Math.round(zeroToOne[1]*10)/10 - pieceHeight;
 			
 			pieces[indexToMove].x1 = Math.round(zeroToOne[0]*10)/10;
 			pieces[indexToMove].y1 = Math.round(zeroToOne[1]*10)/10;
-			pieces[indexToMove].x4 = Math.round(zeroToOne[0]*10)/10 + 0.1;
-			pieces[indexToMove].y4 = Math.round(zeroToOne[1]*10)/10 - 0.1;
+			pieces[indexToMove].x4 = Math.round(zeroToOne[0]*10)/10 + pieceWidth;
+			pieces[indexToMove].y4 = Math.round(zeroToOne[1]*10)/10 - pieceHeight;
+			
+			console.log("NEW SPOT: " + pieces[indexToMove].points);
 			
 			checkIfRemoveOtherPieces(pieces[indexToMove]);
 			indexToMove = -1;
@@ -144,7 +153,9 @@ function drawBoard() {
 	}
 }
 function drawPieces() {
+	
 	for(var i = 0; i < buffers.length; i++) {
+		pieces[i].team == 2 ? gl.uniform4f(colorLocation, 1, 0, 0, 1) : gl.uniform4f(colorLocation, 0, 1, 0, 1)
 		gl.bindBuffer(gl.ARRAY_BUFFER, buffers[i]);
 		gl.vertexAttribPointer(vPosition, buffers[i].itemSize, gl.FLOAT, false, 0, 0);
 		gl.uniform4fv(translationLocation, translations[i]);
@@ -171,21 +182,32 @@ function initBuffers() {
     gl.bufferData( gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW );
 	bufferId.itemSize = 2;
     bufferId.numItems = 3*24;
+	
+	var team = 1;
 	x = 0;
 	
+	var x1 = -0.9;
+	var y1 = 0.9;
+		
+	var x2 = x1 + pieceWidth;
+	var y2 = y1;
+		
+	var x3 = x1;
+	var y3 = y1 - pieceHeight;
+		
+	var x4 = x1 + pieceWidth;
+	var y4 = y1 - pieceHeight;
+	for(var i = 0; i < 15; i++) {
+				
+		x2 = x1 + pieceWidth;
+		y2 = y1;
+			
+		x3 = x1;
+		y3 = y1 - pieceHeight;
+		
+		x4 = x1 + pieceWidth;
+		y4 = y1 - pieceHeight;
 	
-	var x1 = 0.0;
-	var y1 = 0.1;
-		
-	var x2 = 0.1;
-	var y2 = 0.1;
-		
-	var x3 = 0.0;
-	var y3 = 0.0;
-		
-	var x4 = 0.1;
-	var y4 = 0;
-	for(var i = 0; i < 3; i++) {
 		translations[i] = vec4(0, 0, 0, 0);
 		bufferId2 = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, bufferId2);
@@ -199,11 +221,68 @@ function initBuffers() {
 		bufferId2.itemSize = 2;
 		bufferId2.numItems = 4;
 		buffers.push(bufferId2);
-		pieces.push(new Piece(i, x1, y1, x4, y4));
-		x1 = x1 + 0.3;
-		x2 = x2 + 0.3;
-		x3 = x3 + 0.3;
-		x4 = x4 + 0.3;
+		pieces.push(new Piece(i, x1, y1, x4, y4, team));
+		
+		y1 -= 0.1;
+		
+		if(i == 4) {
+			team = 2;
+			x1 = -0.5;
+			y1 = 0.9;
+		} else if(i == 7) {
+			x1 = 0.1;
+			y1 = 0.9;
+		} else if(i == 12) {
+			team = 1;
+			x1 = 0.6;
+			y1 = 0.9;
+		}
+	}
+	
+	x1 = -0.9;
+	y1 = -0.8;
+	team = 2;
+	
+	for(var i = 15; i < 30; i++) {
+				
+		x2 = x1 + pieceWidth;
+		y2 = y1;
+			
+		x3 = x1;
+		y3 = y1 - pieceHeight;
+		
+		x4 = x1 + pieceWidth;
+		y4 = y1 - pieceHeight;
+	
+		translations[i] = vec4(0, 0, 0, 0);
+		bufferId2 = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, bufferId2);
+		
+		var corners = [
+			  x1, y1,
+			  x2, y2,
+			  x3, y3,
+			  x4, y4];
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(corners), gl.STATIC_DRAW);
+		bufferId2.itemSize = 2;
+		bufferId2.numItems = 4;
+		buffers.push(bufferId2);
+		pieces.push(new Piece(i, x1, y1, x4, y4, team));
+		
+		y1 += 0.1;
+		
+		if(i == 19) {
+			team = 1;
+			x1 = -0.5;
+			y1 = -0.8;
+		} else if(i == 22) {
+			x1 = 0.1;
+			y1 = -0.8;
+		} else if(i == 27) {
+			team = 2;
+			x1 = 0.6;
+			y1 = -0.8;
+		}
 	}
 }
 
@@ -224,31 +303,68 @@ function render()
 
 function CreateBoard() {
 
-	p = -0.86; 
-	points.push( p );
+	for(var i = 0; i < 144; i++) {
+//		vertices.push(-0.5);
+//		vertices.push(-0.6);
+		
+		//vertices.push(-0.6);
+		//vertices.push(-0.5);
+		
+//		vertices.push(-0.3);
+//		vertices.push(-0.2);
+	}
+	var x = -0.9;
+	var y = 0.9;
+	var triangleHeight = 0.8;
+	var triangleWidth = 0.1;
 	
-	p = -0.9;
-	points.push( p );
+	for(var i = 0; i < 6; i++) {
+		//console.log(x);
+		vertices.push(x);
+		vertices.push(y);
+		vertices.push(x+triangleWidth/2);
+		vertices.push(1-triangleHeight);
+		vertices.push(x+triangleWidth);
+		vertices.push(y);
+		x += triangleWidth;
+	}
 	
-	p = -0.14;
-	points.push( p );
+	x = 0.1;
+	for(var i = 0; i < 6; i++) {
+		vertices.push(x);
+		vertices.push(y);
+		vertices.push(x+triangleWidth/2);
+		vertices.push(1-triangleHeight);
+		vertices.push(x+triangleWidth);
+		vertices.push(y);
+		x += triangleWidth;
+	}
 	
-	p = -0.9;
-	points.push( p );
+	x = -0.9;
+	y = -0.9; 	
+	for(var i = 0; i < 6; i++) {
+		vertices.push(x);
+		vertices.push(y);
+		vertices.push(x+triangleWidth/2);
+		vertices.push(triangleHeight + y);
+		vertices.push(x+triangleWidth);
+		vertices.push(y);
+		x += triangleWidth;
+	}
 	
-	p = -0.86; 
-	points.push( p );
+	x = 0.1;	
+	for(var i = 0; i < 6; i++) {
+		vertices.push(x);
+		vertices.push(y);
+		vertices.push(x+triangleWidth/2);
+		vertices.push(triangleHeight + y);
+		vertices.push(x+triangleWidth);
+		vertices.push(y);
+		x += triangleWidth;
+	}
 	
-	p = 0.9;
-	points.push( p );
 	
-	p = -0.14; 
-	points.push( p );
-	
-	p = 0.9;
-	points.push( p );
-	
-	// Create the triangles
+/*	// Create the triangles
 	for(var i=-1; i<=1; i+=2)
 	{
 		for(var j=0; j<2; j++)
@@ -275,27 +391,30 @@ function CreateBoard() {
 				
 				p = -i*0.9; 
 				vertices.push( p );
+				console.log("en triangle");
 				
 			}
 		}
 	}
+*/
 }
 
-function Piece(id, x1, y1, x4, y4) {
+function Piece(id, x1, y1, x4, y4, team) {
 	this.id = id;
 	this.x1 = x1;
 	this.y1 = y1;
 	this.x4 = x4;
 	this.y4 = y4;
+	this.team = team;
 	this.points = vec4(x1, y1, x4, y4);
 	
 	this.contains = function(x, y) {
-		/*console.log("click x: " + x);
+		console.log("click x: " + x);
 		console.log("x1: " + this.x1);
 		console.log("x4: " + this.x4);
 		console.log("click y: " + y);
 		console.log("y1: " + this.y1);
-		console.log("y4: " + this.y4);*/
+		console.log("y4: " + this.y4);
 		if(this.x1 < x && x < this.x4 && this.y1 > y && y > this.y4)
 			return true;
 		return false;
