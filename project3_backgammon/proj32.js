@@ -1,4 +1,3 @@
-
 // Array with the poins
 var points = [];
 var vertices = [];
@@ -18,6 +17,18 @@ var vPosition;
 var colorLocation;
 var translationLocation;
 var translations = [];
+
+var player = 1;
+var target;
+var startPlace;
+var player1Return = 0;
+var player2Return = 0;
+
+var player1Ready = 0;
+var player2Ready = 0;
+
+var playerTriangle = [];
+var numPlayerTriangle = [];
 
 var firstClick = true;
 
@@ -40,7 +51,6 @@ window.onload = function init()
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 139/255, 69/255, 19/255, 1.0 );
     
-    
 	initBuffers();
 
     initializeShaders();    
@@ -54,7 +64,6 @@ window.onload = function init()
 	drawBoard();
 	drawPieces();
 	
-
 	var d1 = document.getElementById("dice1");
 	document.getElementById("rollDices").addEventListener("click", function() { 
 		dice1 = Math.floor(Math.random() * 6) + 1; 
@@ -63,43 +72,90 @@ window.onload = function init()
 		document.getElementById("dice2").innerHTML = "Dice2: " + dice2;
 	});
 	
-	
-	
 	canvas.addEventListener ("click", function(event) {	
 		zeroToOne = vec2(2 * event.clientX/canvas.width - 1, -2 * event.clientY/canvas.height + 1);
-
 		
-		if(firstClick) {	
+		if(firstClick) {
 			for(var i = 0; i < pieces.length; i++) {
 				if(pieces[i].contains(zeroToOne[0], zeroToOne[1])) {
 					indexToMove = i;
 					pieceToMove = pieces[i];
 					firstClick = false;
 					console.log("TRAFF");
+					
+					for(var i=0; i<2; i++){
+						for(var j=0; j<6; j++){
+							if(zeroToOne[0]>x && zeroToOne[0]<x+0.1)
+								break;
+						}
+						x = 0.1;
+					}	
+						
+					if(!i)
+						startPlace = 12+j;
+					else
+						startPlace = 18+j;
+						
+					if(zeroToOne[1]>0)
+						startPlace = 11 - startPlace;
+					
+					if(player==-1)
+						startPlace = 5-startPlace;
+				
 					break;
 				}			
 			}
-		} else {
+		} 
+		
+		else {
 			if(indexToMove == -1)
 				return;
-			console.log("OLD SPOT: " + pieces[indexToMove].points);
+			//console.log("OLD SPOT: " + pieces[indexToMove].points);
 			firstClick = true;
 			var transx = Math.round(10*(translations[indexToMove][0] + zeroToOne[0] - pieces[indexToMove].points[0]))/10;
 			var transy = Math.round(10*(translations[indexToMove][1] + zeroToOne[1] - pieces[indexToMove].points[1]))/10;
-			translations[indexToMove] = vec4(transx, transy, 0, 0);
-			console.log("TRANSLATIONS: " + translations[indexToMove][0] + ", " + translations[indexToMove][1]);
 			
-			pieces[indexToMove].points[0] = Math.round(zeroToOne[0]*10)/10;
-			pieces[indexToMove].points[1] = Math.round(zeroToOne[1]*10)/10;
-			pieces[indexToMove].points[2] = Math.round(zeroToOne[0]*10)/10 + pieceWidth;
-			pieces[indexToMove].points[3] = Math.round(zeroToOne[1]*10)/10 - pieceHeight;
+			x = -0.9;
+						
+			for(var i=0; i<2; i++){
+				for(var j=0; j<6; j++){
+					if(zeroToOne[0]>x && zeroToOne[0]<x+0.1)
+						break;
+				}
+				x = 0.1;
+			}	
+				
+			if(!i)
+				target = 12+j;
+				
+			else
+				target = 18+j;
+				
+			if(zeroToOne[1]>0)
+				target = 11 - target;
 			
-			pieces[indexToMove].x1 = Math.round(zeroToOne[0]*10)/10;
-			pieces[indexToMove].y1 = Math.round(zeroToOne[1]*10)/10;
-			pieces[indexToMove].x4 = Math.round(zeroToOne[0]*10)/10 + pieceWidth;
-			pieces[indexToMove].y4 = Math.round(zeroToOne[1]*10)/10 - pieceHeight;
+			if(player==-1)
+				target = 5-target;
+					
+			if(rules()){
+				console.log("IF RULES");
+				translations[indexToMove] = vec4(transx, transy, 0, 0);
+				console.log("TRANSLATIONS: " + translations[indexToMove][0] + ", " + translations[indexToMove][1]);
+				
+				pieces[indexToMove].points[0] = Math.round(zeroToOne[0]*10)/10;
+				pieces[indexToMove].points[1] = Math.round(zeroToOne[1]*10)/10;
+				pieces[indexToMove].points[2] = Math.round(zeroToOne[0]*10)/10 + pieceWidth;
+				pieces[indexToMove].points[3] = Math.round(zeroToOne[1]*10)/10 - pieceHeight;
+				
+				pieces[indexToMove].x1 = Math.round(zeroToOne[0]*10)/10;
+				pieces[indexToMove].y1 = Math.round(zeroToOne[1]*10)/10;
+				pieces[indexToMove].x4 = Math.round(zeroToOne[0]*10)/10 + pieceWidth;
+				pieces[indexToMove].y4 = Math.round(zeroToOne[1]*10)/10 - pieceHeight;
+				
+				pieces[indexToMove].triangle = target;
+			}
 			
-			console.log("NEW SPOT: " + pieces[indexToMove].points);
+			//console.log("NEW SPOT: " + pieces[indexToMove].points);
 			
 			checkIfRemoveOtherPieces(pieces[indexToMove]);
 			indexToMove = -1;
@@ -197,6 +253,7 @@ function initBuffers() {
 		
 	var x4 = x1 + pieceWidth;
 	var y4 = y1 - pieceHeight;
+	
 	for(var i = 0; i < 15; i++) {
 				
 		x2 = x1 + pieceWidth;
@@ -284,6 +341,28 @@ function initBuffers() {
 			y1 = -0.8;
 		}
 	}
+	
+	for(var i=0; i<24; i++){
+		playerTriangle.push(0);
+		numPlayerTriangle.push(0)
+	}
+		
+	playerTriangle[0] = 1;
+	numPlayerTriangle[0] = 2
+	playerTriangle[5] = -1;
+	numPlayerTriangle[5] = 5
+	playerTriangle[7] = -1;
+	numPlayerTriangle[7] = 3;
+	playerTriangle[11] = 1;
+	numPlayerTriangle[11] = 5;
+	playerTriangle[12] = -1;
+	numPlayerTriangle[12] = 5;
+	playerTriangle[16] = 1;
+	numPlayerTriangle[16] = 3;
+	playerTriangle[18] = 1;
+	numPlayerTriangle[18] = 5;
+	playerTriangle[23] = 1;
+	numPlayerTriangle[23] = 2;
 }
 
 // Returns a random integer from 0 to range - 1.
@@ -399,7 +478,7 @@ function CreateBoard() {
 */
 }
 
-function Piece(id, x1, y1, x4, y4, team) {
+function Piece(id, x1, y1, x4, y4, team, triangle) {
 	this.id = id;
 	this.x1 = x1;
 	this.y1 = y1;
@@ -409,14 +488,68 @@ function Piece(id, x1, y1, x4, y4, team) {
 	this.points = vec4(x1, y1, x4, y4);
 	
 	this.contains = function(x, y) {
-		console.log("click x: " + x);
+		/*console.log("click x: " + x);
 		console.log("x1: " + this.x1);
 		console.log("x4: " + this.x4);
 		console.log("click y: " + y);
 		console.log("y1: " + this.y1);
-		console.log("y4: " + this.y4);
+		console.log("y4: " + this.y4); */
 		if(this.x1 < x && x < this.x4 && this.y1 > y && y > this.y4)
 			return true;
 		return false;
 	}
+}
+
+
+function rules(PlayerReturn) {
+	//	Triangle is a vector that represent each one of the triangles. Triangle 1 is the last one of the top and the 24 is the last one of the bottom
+	// NumPlayerTriangle is a vector that have the number of pieces in each triangle
+	// target is the selected triangle (previously)
+	
+	// Player 2 will be called player -1 to make the function easier to work with
+	
+	if(player==-1){
+		dice1 = 24 - dice1;
+		dice2 = 24 - dice2;
+	}
+	
+	//If the player need to put one piece back to the game
+	if(player1Return || player2Return){
+		if(target == dice1 || target == dice2){
+			if(playerTriangle[target] == player)
+				return true;
+			else{
+				if(NumPlayerTriangle[target] <= 1){
+					// -> put here function to remove the opponent piece 
+					return true;
+				}
+			}
+		}
+	}
+	
+	// If not, the player just walk normally
+	
+	else{
+		console.log("TARGET: "  + target);
+		console.log("startPlace + player*dice1: " + (startPlace + player*dice1));
+		console.log("startPlace + player*dice2: " + (startPlace + player*dice2));
+		if(target == startPlace + player*dice1 || target == startPlace + player*dice2){			
+			if(playerTriangle[target] == player)
+					return true;
+			else{
+				if(NumPlayerTriangle[target] <= 1){
+					// -> put here function to remove the opponent piece 
+					return true;
+				}
+			}
+		}
+		
+		else{
+			alert('Illegal moviment');
+			return false;
+		}
+	}
+	
+	alert('You cannot move');
+	return false;
 }
