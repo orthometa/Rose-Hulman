@@ -1,3 +1,10 @@
+/*
+Authors: Andreas Palsson & Igor Ramon
+Known bugs: 
+Rules are only mostly working
+You have to press in the lefternmost part of everything, or it will get rounded off to the right too much.
+*/
+
 // Array with the poins
 var points = [];
 var vertices = [];
@@ -27,6 +34,7 @@ var player2Return = 0;
 var player1Ready = 0;
 var player2Ready = 0;
 
+var numberTimes = -1;
 var playerTriangle = [];
 var numPlayerTriangle = [];
 
@@ -70,10 +78,14 @@ window.onload = function init()
 		dice2 = Math.floor(Math.random() * 6) + 1;
 		document.getElementById("dice1").innerHTML = "Dice1: " + dice1;
 		document.getElementById("dice2").innerHTML = "Dice2: " + dice2;
+		
+		if(dice1 == dice2)
+			numberTimes = dice1;
+		else
+			numberTimes = 2;
 	});
 	
 	canvas.addEventListener ("click", function(event) {	
-		console.log("TRIANGEL 1: " + numberOfPiecesInTriangle(1));
 		zeroToOne = vec2(2 * event.clientX/canvas.width - 1, -2 * event.clientY/canvas.height + 1);
 		checkWhichTriangle(zeroToOne[0], zeroToOne[1], player);
 		if(firstClick) {
@@ -85,7 +97,7 @@ window.onload = function init()
 					console.log("TRAFF");
 					
 					startPlace = checkWhichTriangle(zeroToOne[0], zeroToOne[1], player);
-					//console.log("NU E STARTPLACE: " + startPlace);
+					console.log("NU E STARTPLACE: " + startPlace);
 					break;
 				}			
 			}
@@ -96,10 +108,8 @@ window.onload = function init()
 				return;
 			//console.log("OLD SPOT: " + pieces[indexToMove].points);
 			firstClick = true;
-			
 			var transx = Math.round(10*(translations[indexToMove][0] + zeroToOne[0] - pieces[indexToMove].points[0]))/10;
 			var transy = Math.round(10*(translations[indexToMove][1] + zeroToOne[1] - pieces[indexToMove].points[1]))/10;
-			
 			
 			target = checkWhichTriangle(zeroToOne[0], zeroToOne[1], player);
 					
@@ -119,12 +129,17 @@ window.onload = function init()
 				pieces[indexToMove].y4 = Math.round(zeroToOne[1]*10)/10 - pieceHeight;
 				
 				pieces[indexToMove].triangle = target;
-				checkIfRemoveOtherPieces(pieces[indexToMove]);
 			}
 			
 			//console.log("NEW SPOT: " + pieces[indexToMove].points);
 			
+			//checkIfRemoveOtherPieces(pieces[indexToMove]);
 			
+			if(numberTimes==0){
+				player = player*-1;
+				alert('Change Player');
+			}
+				
 			indexToMove = -1;
 			drawBoard();
 			drawPieces();
@@ -134,25 +149,16 @@ window.onload = function init()
 	
 };
 
-function numberOfPiecesInTriangle(triangle) {
-	var sum = 0;
-	for(var i = 0; i < pieces.length; i++) {
-		if(pieces[i].triangle == triangle)
-			sum += 1;
-	}
-	return sum;
-}
-
 function checkWhichTriangle(clickX, clickY, team) {
 	var index;
 	var jIndex;
 	x = 0.6;
-	console.log("checkWhichTriangle");
+	//console.log("checkWhichTriangle");
 	for(var i = 0; i < 12; i++) {
 		//console.log("x: " + x);
 		//console.log("clickX: " + clickX);
 		if(clickX>x && clickX<x+0.1) {
-			//console.log("i: " + i);
+			console.log("i: " + i);
 			index = i + 1;
 			break;
 		}
@@ -165,6 +171,7 @@ function checkWhichTriangle(clickX, clickY, team) {
 	if(clickY < 0) {
 		index = 24 - index + 1;
 	}
+	
 	console.log("TRIANGLE: " + index);
 	return index;
 }
@@ -256,7 +263,6 @@ function initBuffers() {
 	var x4 = x1 + pieceWidth;
 	var y4 = y1 - pieceHeight;
 	
-	var triangle = 12;
 	for(var i = 0; i < 15; i++) {
 				
 		x2 = x1 + pieceWidth;
@@ -281,21 +287,18 @@ function initBuffers() {
 		bufferId2.itemSize = 2;
 		bufferId2.numItems = 4;
 		buffers.push(bufferId2);
-		pieces.push(new Piece(i, x1, y1, x4, y4, team, triangle));
+		pieces.push(new Piece(i, x1, y1, x4, y4, team));
 		
 		y1 -= 0.1;
 		
 		if(i == 4) {
-			triangle = 8;
 			team = 2;
 			x1 = -0.5;
 			y1 = 0.9;
 		} else if(i == 7) {
-			triangle = 6;
 			x1 = 0.1;
 			y1 = 0.9;
 		} else if(i == 12) {
-			triangle = 1;
 			team = 1;
 			x1 = 0.6;
 			y1 = 0.9;
@@ -305,7 +308,7 @@ function initBuffers() {
 	x1 = -0.9;
 	y1 = -0.8;
 	team = 2;
-	triangle = 13;
+	
 	for(var i = 15; i < 30; i++) {
 				
 		x2 = x1 + pieceWidth;
@@ -330,21 +333,18 @@ function initBuffers() {
 		bufferId2.itemSize = 2;
 		bufferId2.numItems = 4;
 		buffers.push(bufferId2);
-		pieces.push(new Piece(i, x1, y1, x4, y4, team, triangle));
+		pieces.push(new Piece(i, x1, y1, x4, y4, team));
 		
 		y1 += 0.1;
 		
 		if(i == 19) {
-			triangle = 17;
 			team = 1;
 			x1 = -0.5;
 			y1 = -0.8;
 		} else if(i == 22) {
-			triangle = 19;
 			x1 = 0.1;
 			y1 = -0.8;
 		} else if(i == 27) {
-			triangle = 24;
 			team = 2;
 			x1 = 0.6;
 			y1 = -0.8;
@@ -356,22 +356,22 @@ function initBuffers() {
 		numPlayerTriangle.push(0)
 	}
 		
-	playerTriangle[0] = 1;
-	numPlayerTriangle[0] = 2
-	playerTriangle[5] = -1;
-	numPlayerTriangle[5] = 5
-	playerTriangle[7] = -1;
-	numPlayerTriangle[7] = 3;
-	playerTriangle[11] = 1;
-	numPlayerTriangle[11] = 5;
-	playerTriangle[12] = -1;
+	playerTriangle[1] = 1;
+	numPlayerTriangle[1] = 2
+	playerTriangle[6] = -1;
+	numPlayerTriangle[6] = 5
+	playerTriangle[8] = -1;
+	numPlayerTriangle[8] = 3;
+	playerTriangle[12] = 1;
 	numPlayerTriangle[12] = 5;
-	playerTriangle[16] = 1;
-	numPlayerTriangle[16] = 3;
-	playerTriangle[18] = 1;
-	numPlayerTriangle[18] = 5;
-	playerTriangle[23] = 1;
-	numPlayerTriangle[23] = 2;
+	playerTriangle[13] = -1;
+	numPlayerTriangle[13] = 5;
+	playerTriangle[17] = 1;
+	numPlayerTriangle[17] = 3;
+	playerTriangle[19] = 1;
+	numPlayerTriangle[19] = 5;
+	playerTriangle[24] = 1;
+	numPlayerTriangle[24] = 2;
 }
 
 // Returns a random integer from 0 to range - 1.
@@ -441,40 +441,6 @@ function CreateBoard() {
 		x += triangleWidth;
 	}
 	
-	
-/*	// Create the triangles
-	for(var i=-1; i<=1; i+=2)
-	{
-		for(var j=0; j<2; j++)
-		{
-			for(var k=0; k<6; k++)
-			{
-				//p = vec2 (j-0.86+0.12*k, -i*0.9);
-				p = j-0.86+0.12*k;
-				vertices.push( p );
-				
-				p = -i*0.9;
-				vertices.push( p );
-				
-				//p = vec2 (j-0.86+0.06+0.12*k, -i*0.2);
-				p = j-0.86+0.06+0.12*k;
-				vertices.push( p );
-				
-				p = -i*0.2;
-				vertices.push( p ) ;
-				
-				//p = vec2 (j-0.86+0.12+0.12*k, -i*0.9);
-				p = j-0.86+0.12+0.12*k;
-				vertices.push( p );
-				
-				p = -i*0.9; 
-				vertices.push( p );
-				console.log("en triangle");
-				
-			}
-		}
-	}
-*/
 }
 
 function Piece(id, x1, y1, x4, y4, team, triangle) {
@@ -485,7 +451,6 @@ function Piece(id, x1, y1, x4, y4, team, triangle) {
 	this.y4 = y4;
 	this.team = team;
 	this.points = vec4(x1, y1, x4, y4);
-	this.triangle = triangle;
 	
 	this.contains = function(x, y) {
 		/*console.log("click x: " + x);
@@ -507,6 +472,7 @@ function rules() {
 	// target is the selected triangle (previously)
 	
 	// Player 2 will be called player -1 to make the function easier to work with
+	numberTimes--;
 	
 	if(player==-1){
 		dice1 = 24 - dice1;
@@ -529,21 +495,19 @@ function rules() {
 	
 	// If not, the player just walk normally
 	else{
-		if(player == -1) {
-			startPlace = 24 - startPlace;
-		}
-		console.log("PLAYER: " + player);
 		console.log("TARGET: "  + target);
+		console.log("DICE1: "+ dice1);
+		console.log("DICE2: "+ dice2);
 		console.log("startPlace + player*dice1: " + (startPlace + player*dice1));
 		console.log("startPlace + player*dice2: " + (startPlace + player*dice2));
 		console.log("startPlace: " + startPlace);
-		if(target == startPlace + player*dice1 || target == startPlace + player*dice2){			
+		if(target == startPlace + player*dice1 || target == startPlace + player*dice2){	
 			if(playerTriangle[target] == player)
 					return true;
 			else{
 				if(numPlayerTriangle[target] <= 1){
 					console.log("remove stuff");
-					// -> put here function to remove the opponent piece 
+					checkIfRemoveOtherPieces(pieces[indexToMove]); 
 					return true;
 				}
 			}
@@ -551,10 +515,12 @@ function rules() {
 		
 		else{
 			alert('Illegal moviment');
+			numberTimes++;
 			return false;
 		}
 	}
 	
 	alert('You cannot move');
+	numberTimes++;
 	return false;
 }
