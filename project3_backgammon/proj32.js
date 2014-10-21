@@ -3,6 +3,7 @@ Authors: Andreas Palsson & Igor Ramon
 Known bugs: 
 Rules are only mostly working
 You have to press in the lefternmost part of everything, or it will get rounded off to the right too much.
+When moving the red pieces, you have to press the corner of the triangle to which you want it moved.
 */
 
 // Array with the poins
