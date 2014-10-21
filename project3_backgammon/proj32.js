@@ -84,7 +84,7 @@ window.onload = function init()
 					console.log("TRAFF");
 					
 					startPlace = checkWhichTriangle(zeroToOne[0], zeroToOne[1], player);
-					console.log("NU E STARTPLACE: " + startPlace);
+					//console.log("NU E STARTPLACE: " + startPlace);
 					break;
 				}			
 			}
@@ -101,9 +101,9 @@ window.onload = function init()
 			target = checkWhichTriangle(zeroToOne[0], zeroToOne[1], player);
 					
 			if(rules()){
-				console.log("IF RULES");
+				//console.log("IF RULES");
 				translations[indexToMove] = vec4(transx, transy, 0, 0);
-				console.log("TRANSLATIONS: " + translations[indexToMove][0] + ", " + translations[indexToMove][1]);
+				//console.log("TRANSLATIONS: " + translations[indexToMove][0] + ", " + translations[indexToMove][1]);
 				
 				pieces[indexToMove].points[0] = Math.round(zeroToOne[0]*10)/10;
 				pieces[indexToMove].points[1] = Math.round(zeroToOne[1]*10)/10;
@@ -116,11 +116,12 @@ window.onload = function init()
 				pieces[indexToMove].y4 = Math.round(zeroToOne[1]*10)/10 - pieceHeight;
 				
 				pieces[indexToMove].triangle = target;
+				checkIfRemoveOtherPieces(pieces[indexToMove]);
 			}
 			
 			//console.log("NEW SPOT: " + pieces[indexToMove].points);
 			
-			checkIfRemoveOtherPieces(pieces[indexToMove]);
+			
 			indexToMove = -1;
 			drawBoard();
 			drawPieces();
@@ -136,10 +137,10 @@ function checkWhichTriangle(clickX, clickY, team) {
 	x = 0.6;
 	console.log("checkWhichTriangle");
 	for(var i = 0; i < 12; i++) {
-		console.log("x: " + x);
-		console.log("clickX: " + clickX);
+		//console.log("x: " + x);
+		//console.log("clickX: " + clickX);
 		if(clickX>x && clickX<x+0.1) {
-			console.log("i: " + i);
+			//console.log("i: " + i);
 			index = i + 1;
 			break;
 		}
@@ -517,8 +518,11 @@ function rules() {
 	}
 	
 	// If not, the player just walk normally
-	
 	else{
+		if(player == -1) {
+			startPlace = 24 - startPlace;
+		}
+		console.log("PLAYER: " + player);
 		console.log("TARGET: "  + target);
 		console.log("startPlace + player*dice1: " + (startPlace + player*dice1));
 		console.log("startPlace + player*dice2: " + (startPlace + player*dice2));
