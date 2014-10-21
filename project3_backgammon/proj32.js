@@ -73,6 +73,7 @@ window.onload = function init()
 	});
 	
 	canvas.addEventListener ("click", function(event) {	
+		console.log("TRIANGEL 1: " + numberOfPiecesInTriangle(1));
 		zeroToOne = vec2(2 * event.clientX/canvas.width - 1, -2 * event.clientY/canvas.height + 1);
 		checkWhichTriangle(zeroToOne[0], zeroToOne[1], player);
 		if(firstClick) {
@@ -95,8 +96,10 @@ window.onload = function init()
 				return;
 			//console.log("OLD SPOT: " + pieces[indexToMove].points);
 			firstClick = true;
+			
 			var transx = Math.round(10*(translations[indexToMove][0] + zeroToOne[0] - pieces[indexToMove].points[0]))/10;
 			var transy = Math.round(10*(translations[indexToMove][1] + zeroToOne[1] - pieces[indexToMove].points[1]))/10;
+			
 			
 			target = checkWhichTriangle(zeroToOne[0], zeroToOne[1], player);
 					
@@ -130,6 +133,15 @@ window.onload = function init()
 	});
 	
 };
+
+function numberOfPiecesInTriangle(triangle) {
+	var sum = 0;
+	for(var i = 0; i < pieces.length; i++) {
+		if(pieces[i].triangle == triangle)
+			sum += 1;
+	}
+	return sum;
+}
 
 function checkWhichTriangle(clickX, clickY, team) {
 	var index;
@@ -244,6 +256,7 @@ function initBuffers() {
 	var x4 = x1 + pieceWidth;
 	var y4 = y1 - pieceHeight;
 	
+	var triangle = 12;
 	for(var i = 0; i < 15; i++) {
 				
 		x2 = x1 + pieceWidth;
@@ -268,18 +281,21 @@ function initBuffers() {
 		bufferId2.itemSize = 2;
 		bufferId2.numItems = 4;
 		buffers.push(bufferId2);
-		pieces.push(new Piece(i, x1, y1, x4, y4, team));
+		pieces.push(new Piece(i, x1, y1, x4, y4, team, triangle));
 		
 		y1 -= 0.1;
 		
 		if(i == 4) {
+			triangle = 8;
 			team = 2;
 			x1 = -0.5;
 			y1 = 0.9;
 		} else if(i == 7) {
+			triangle = 6;
 			x1 = 0.1;
 			y1 = 0.9;
 		} else if(i == 12) {
+			triangle = 1;
 			team = 1;
 			x1 = 0.6;
 			y1 = 0.9;
@@ -289,7 +305,7 @@ function initBuffers() {
 	x1 = -0.9;
 	y1 = -0.8;
 	team = 2;
-	
+	triangle = 13;
 	for(var i = 15; i < 30; i++) {
 				
 		x2 = x1 + pieceWidth;
@@ -314,18 +330,21 @@ function initBuffers() {
 		bufferId2.itemSize = 2;
 		bufferId2.numItems = 4;
 		buffers.push(bufferId2);
-		pieces.push(new Piece(i, x1, y1, x4, y4, team));
+		pieces.push(new Piece(i, x1, y1, x4, y4, team, triangle));
 		
 		y1 += 0.1;
 		
 		if(i == 19) {
+			triangle = 17;
 			team = 1;
 			x1 = -0.5;
 			y1 = -0.8;
 		} else if(i == 22) {
+			triangle = 19;
 			x1 = 0.1;
 			y1 = -0.8;
 		} else if(i == 27) {
+			triangle = 24;
 			team = 2;
 			x1 = 0.6;
 			y1 = -0.8;
@@ -372,16 +391,6 @@ function render()
 
 function CreateBoard() {
 
-	for(var i = 0; i < 144; i++) {
-//		vertices.push(-0.5);
-//		vertices.push(-0.6);
-		
-		//vertices.push(-0.6);
-		//vertices.push(-0.5);
-		
-//		vertices.push(-0.3);
-//		vertices.push(-0.2);
-	}
 	var x = -0.9;
 	var y = 0.9;
 	var triangleHeight = 0.8;
@@ -476,6 +485,7 @@ function Piece(id, x1, y1, x4, y4, team, triangle) {
 	this.y4 = y4;
 	this.team = team;
 	this.points = vec4(x1, y1, x4, y4);
+	this.triangle = triangle;
 	
 	this.contains = function(x, y) {
 		/*console.log("click x: " + x);
