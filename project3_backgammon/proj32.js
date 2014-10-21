@@ -20,7 +20,7 @@ var translations = [];
 
 var player = 1;
 var target;
-var startPlace;
+var startPlace = 0;
 var player1Return = 0;
 var player2Return = 0;
 
@@ -74,7 +74,7 @@ window.onload = function init()
 	
 	canvas.addEventListener ("click", function(event) {	
 		zeroToOne = vec2(2 * event.clientX/canvas.width - 1, -2 * event.clientY/canvas.height + 1);
-		
+		checkWhichTriangle(zeroToOne[0], zeroToOne[1], player);
 		if(firstClick) {
 			for(var i = 0; i < pieces.length; i++) {
 				if(pieces[i].contains(zeroToOne[0], zeroToOne[1])) {
@@ -83,25 +83,8 @@ window.onload = function init()
 					firstClick = false;
 					console.log("TRAFF");
 					
-					for(var i=0; i<2; i++){
-						for(var j=0; j<6; j++){
-							if(zeroToOne[0]>x && zeroToOne[0]<x+0.1)
-								break;
-						}
-						x = 0.1;
-					}	
-						
-					if(!i)
-						startPlace = 12+j;
-					else
-						startPlace = 18+j;
-						
-					if(zeroToOne[1]>0)
-						startPlace = 11 - startPlace;
-					
-					if(player==-1)
-						startPlace = 5-startPlace;
-				
+					startPlace = checkWhichTriangle(zeroToOne[0], zeroToOne[1], player);
+					console.log("NU E STARTPLACE: " + startPlace);
 					break;
 				}			
 			}
@@ -115,27 +98,7 @@ window.onload = function init()
 			var transx = Math.round(10*(translations[indexToMove][0] + zeroToOne[0] - pieces[indexToMove].points[0]))/10;
 			var transy = Math.round(10*(translations[indexToMove][1] + zeroToOne[1] - pieces[indexToMove].points[1]))/10;
 			
-			x = -0.9;
-						
-			for(var i=0; i<2; i++){
-				for(var j=0; j<6; j++){
-					if(zeroToOne[0]>x && zeroToOne[0]<x+0.1)
-						break;
-				}
-				x = 0.1;
-			}	
-				
-			if(!i)
-				target = 12+j;
-				
-			else
-				target = 18+j;
-				
-			if(zeroToOne[1]>0)
-				target = 11 - target;
-			
-			if(player==-1)
-				target = 5-target;
+			target = checkWhichTriangle(zeroToOne[0], zeroToOne[1], player);
 					
 			if(rules()){
 				console.log("IF RULES");
@@ -166,6 +129,32 @@ window.onload = function init()
 	});
 	
 };
+
+function checkWhichTriangle(clickX, clickY, team) {
+	var index;
+	var jIndex;
+	x = 0.6;
+	console.log("checkWhichTriangle");
+	for(var i = 0; i < 12; i++) {
+		console.log("x: " + x);
+		console.log("clickX: " + clickX);
+		if(clickX>x && clickX<x+0.1) {
+			console.log("i: " + i);
+			index = i + 1;
+			break;
+		}
+		x -= 0.1;
+		if(i == 5) {
+			x = -0.4;
+		}
+	}
+	
+	if(clickY < 0) {
+		index = 24 - index + 1;
+	}
+	console.log("TRIANGLE: " + index);
+	return index;
+}
 
 function checkIfRemoveOtherPieces(piece) {
 	for(var i = 0; i < pieces.length; i++) {
@@ -501,7 +490,7 @@ function Piece(id, x1, y1, x4, y4, team, triangle) {
 }
 
 
-function rules(PlayerReturn) {
+function rules() {
 	//	Triangle is a vector that represent each one of the triangles. Triangle 1 is the last one of the top and the 24 is the last one of the bottom
 	// NumPlayerTriangle is a vector that have the number of pieces in each triangle
 	// target is the selected triangle (previously)
@@ -533,11 +522,13 @@ function rules(PlayerReturn) {
 		console.log("TARGET: "  + target);
 		console.log("startPlace + player*dice1: " + (startPlace + player*dice1));
 		console.log("startPlace + player*dice2: " + (startPlace + player*dice2));
+		console.log("startPlace: " + startPlace);
 		if(target == startPlace + player*dice1 || target == startPlace + player*dice2){			
 			if(playerTriangle[target] == player)
 					return true;
 			else{
-				if(NumPlayerTriangle[target] <= 1){
+				if(numPlayerTriangle[target] <= 1){
+					console.log("remove stuff");
 					// -> put here function to remove the opponent piece 
 					return true;
 				}
