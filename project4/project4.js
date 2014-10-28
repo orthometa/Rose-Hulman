@@ -178,6 +178,7 @@ function render()
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
 	
 	
+	//USE THIS FOR TRANSLATION 
 	tz1 = mat4 (1.0, 0.0, 0.0, -cubeSize2,
 			   0.0, 1.0, 0.0, -cubeSize2,
 			   0.0, 0.0, 1.0, -cubeSize2+20,
