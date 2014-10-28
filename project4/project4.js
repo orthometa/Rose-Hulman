@@ -8,10 +8,6 @@ var projectionLoc;
 var vertices = [];
 var colors = [];
 var indices = [];
-var theta = [];
-var angles  = [];
-var c = [];
-var s = [];
 
 var numTimesToSubdivide = 5;
 
@@ -112,9 +108,6 @@ window.onload = function init()
 	   5, 4, 0, 0, 1, 5   // left face
 	];
 	
-	theta[0] = 0.0;
-	theta[1] = 0.0;
-	theta[2] = 0.0;
 	
 	ambientProduct = mult(lightAmbient, materialAmbient);
 	console.log(ambientProduct + " :: AA ");
@@ -132,15 +125,6 @@ window.onload = function init()
 	//projection = ortho (windowMin, windowMax, windowMin, windowMax, windowMin, windowMax+cubeSize);
 	// Register event listeners for the buttons
 	
-	var a=document.getElementById ("XButton");
-	a.addEventListener ("click", function() { axis = xAxis; });
-	var b=document.getElementById ("YButton");
-	b.addEventListener ("click", function () { axis = yAxis; });
-	var c=document.getElementById ("ZButton");
-	c.addEventListener ("click", function () { axis = zAxis; });
-	var d=document.getElementById ("Reset");
-	d.addEventListener ("click", function () { theta = [0.0, 0.0, 0.0]; axis = xAxis });
-
 	
 	/*var va = vec4(0.0, 0.0, -1.0, 1);
     var vb = vec4(0.0, 0.942809, 0.333333, 1);
@@ -193,30 +177,10 @@ function render()
 	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
 	
-	for (i=0; i<3; i++) {
-		angles[i] = radians(theta[i]);
-		c[i] = Math.cos(angles[i]);
-		s[i] = Math.sin(angles[i]);
-	}
-	
-	rx = mat4 (1.0, 0.0, 0.0, 0.0,
-	           0.0, c[0], -s[0], 0.0,
-			   0.0, s[0], c[0], 0.0,
-			   0.0, 0.0, 0.0, 1.0);
-				   
-	ry = mat4 (c[1], 0.0, s[1], 0.0,
-			   0.0, 1.0, 0.0, 0.0,
-			   -s[1], 0.0, c[1], 0.0,
-			   0.0, 0.0, 0.0, 1.0);
-	
-	rz = mat4 (c[2], -s[2], 0.0, 0.0,
-			   s[2], c[2], 0.0, 0.0,
-			   0.0, 0.0, 1.0, 0.0,
-			   0.0, 0.0, 0.0, 1.0);
 	
 	tz1 = mat4 (1.0, 0.0, 0.0, -cubeSize2,
 			   0.0, 1.0, 0.0, -cubeSize2,
-			   0.0, 0.0, 1.0, -cubeSize2,
+			   0.0, 0.0, 1.0, -cubeSize2+20,
 			   0.0, 0.0, 0.0, 1.0);
 			   
 	tz2 = mat4 (1.0, 0.0, 0.0, cubeSize2,
@@ -226,8 +190,7 @@ function render()
 	
 	looking = lookAt (vec3(cubeSize2,cubeSize2,4*cubeSize), vec3(cubeSize2,cubeSize2,0), vec3(0.0, 1.0, 0.0));
 	projection = perspective (45.0, aspect, 1, 1000*cubeSize);
-	rotation = mult (rz, mult(ry, rx));
-	modelView = mult(looking, mult(tz2, mult (rotation, tz1)));
+	modelView = mult(looking, mult(tz2, tz1));
 	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
 	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
 	translation = [0, 0, 0, 0];
