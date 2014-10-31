@@ -39,6 +39,7 @@ var vBuffer;
 var vPosition;
 var program;
 var lpostBuffer;
+var lpostBuffer2;
 
 function triangle(a, b, c) {
      pointsArray.push(a); 
@@ -92,7 +93,7 @@ window.onload = function init()
 	];
 	
 	var lampPostHeight = 10;
-	var lampPostWidth = 3;
+	var lampPostWidth = 1.5;
 	var lampPostDepth = 3;
 	
 	vertices2 = [
@@ -104,6 +105,18 @@ window.onload = function init()
 	   vec4(0.0, lampPostHeight, -lampPostDepth, 1.0),
 	   vec4(lampPostWidth, lampPostHeight, -lampPostDepth, 1.0),
 	   vec4(lampPostWidth, 0, -lampPostDepth, 1.0)
+	];
+	
+	vertices3 = [	   
+	   //the upper end of the light post
+	   vec4(-lampPostWidth, lampPostHeight, 0, 1.0),
+	   vec4(-lampPostWidth, lampPostHeight+1, 0, 1.0),
+	   vec4(lampPostWidth, lampPostHeight+1, 0, 1.0),
+	   vec4(lampPostWidth, lampPostHeight, 0, 1.0),
+	   vec4(-lampPostWidth, lampPostHeight, -lampPostDepth, 1.0),
+	   vec4(-lampPostWidth, lampPostHeight+0.1, -lampPostDepth, 1.0),
+	   vec4(lampPostWidth, lampPostHeight+1, -lampPostDepth, 1.0), 
+	   vec4(lampPostWidth, lampPostHeight, -lampPostDepth, 1.0)
 	];
 	
 	 colors = [
@@ -172,6 +185,10 @@ window.onload = function init()
 	lpostBuffer = gl.createBuffer();
 	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer);
 	gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices2), gl.STATIC_DRAW );
+	
+	lpostBuffer2 = gl.createBuffer();
+	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer2);
+	gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices3), gl.STATIC_DRAW );
 
     vPosition = gl.getAttribLocation( program, "vPosition" );
     gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
@@ -198,7 +215,8 @@ function render()
 	drawRoad();
 	
 	drawLampPost();
-		
+	
+	drawLampPostTop();	
 	drawSphere(); 
 	   
 	requestAnimFrame (render);
@@ -237,6 +255,37 @@ function drawRoad() {
 
 function drawLampPost() {
 	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer );
+	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
+	
+	
+	//USE THIS FOR TRANSLATION 
+	tz1 = mat4 (1.0, 0.0, 0.0, 10.0,
+			   0.0, 1.0, 0.0, 0.0,
+			   0.0, 0.0, 1.0, 0,
+			   0.0, 0.0, 0.0, 1.0);
+			   
+	tz2 = mat4 (1.0, 0.0, 0.0, 0,
+			   0.0, 1.0, 0.0, 0,
+			   0.0, 0.0, 1.0, 0,
+			   0.0, 0.0, 0.0, 1.0);
+	
+	looking = lookAt (vec3(cubeSize2,cubeSize2,4*cubeSize), vec3(cubeSize2,cubeSize2,0), vec3(0.0, 1.0, 0.0));
+	projection = perspective (45.0, aspect, 1, 1000*cubeSize);
+	modelView = mult(looking, mult(tz2, tz1));
+	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
+	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
+	translation = [0, 0, 0, 0];
+	scale = [1, 1, 1, 1];
+	gl.uniform4fv(gl.getUniformLocation(program, "translation"), flatten(translation));
+	gl.uniform4fv(gl.getUniformLocation(program, "scale"), flatten(scale));
+	for (var i=0; i<6; i++) {
+		gl.uniform4fv (colorLoc, colors[i]);
+		gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 6*i );
+	}
+}
+
+function drawLampPostTop() {
+	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer2 );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
 	
 	
