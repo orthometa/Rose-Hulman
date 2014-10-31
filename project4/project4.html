@@ -13,12 +13,14 @@ uniform vec4 translation;
 uniform vec4 scale;
 
 varying vec3 N, L, E;
-uniform vec4 lightPosition;
+varying vec4 vLightWeighting;
+uniform vec4 ambientColor;
 
 void
 main()
 {
     gl_Position = projection * modelView * vPosition * scale + translation;
+	vLightWeighting = ambientColor;
 }
 </script>
 
@@ -27,6 +29,7 @@ precision mediump float;
    
 uniform vec4 color;
 uniform vec4 ambientProduct;
+varying vec4 vLightWeighting;
 
 void
 main()
@@ -34,7 +37,7 @@ main()
 	vec4 ambient = ambientProduct;
 	vec4 fColor = ambient;
 	fColor.a = 1.0;
-    gl_FragColor = color;
+    gl_FragColor = color;// * fColor; // * vLightWeighting;
 }
 </script>
 

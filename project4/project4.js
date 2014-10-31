@@ -25,8 +25,7 @@ var projection;
 var modelView;
 var aspect;
 
-var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0 );
-var materialAmbient = vec4( 1.0, 0.0, 1.0, 1.0 );
+
 var ambientColor;
 
 var pointsArray = [];
@@ -93,8 +92,8 @@ window.onload = function init()
 	];
 	
 	var lampPostHeight = 10;
-	var lampPostWidth = 1.5;
-	var lampPostDepth = 3;
+	var lampPostWidth = 1;
+	var lampPostDepth = 1;
 	
 	vertices2 = [
 	   vec4(0.0	, 0.0	, 0, 1.0),
@@ -109,12 +108,12 @@ window.onload = function init()
 	
 	vertices3 = [	   
 	   //the upper end of the light post
-	   vec4(-lampPostWidth, lampPostHeight, 0, 1.0),
-	   vec4(-lampPostWidth, lampPostHeight+1, 0, 1.0),
+	   vec4(-2*lampPostWidth, lampPostHeight, 0, 1.0),
+	   vec4(-2*lampPostWidth, lampPostHeight+1, 0, 1.0),
 	   vec4(lampPostWidth, lampPostHeight+1, 0, 1.0),
 	   vec4(lampPostWidth, lampPostHeight, 0, 1.0),
-	   vec4(-lampPostWidth, lampPostHeight, -lampPostDepth, 1.0),
-	   vec4(-lampPostWidth, lampPostHeight+0.1, -lampPostDepth, 1.0),
+	   vec4(-2*lampPostWidth, lampPostHeight, -lampPostDepth, 1.0),
+	   vec4(-2*lampPostWidth, lampPostHeight+0.1, -lampPostDepth, 1.0),
 	   vec4(lampPostWidth, lampPostHeight+1, -lampPostDepth, 1.0), 
 	   vec4(lampPostWidth, lampPostHeight, -lampPostDepth, 1.0)
 	];
@@ -138,13 +137,9 @@ window.onload = function init()
 	   5, 4, 0, 0, 1, 5   // left face
 	];
 	
+	//gl.uniform4fv(gl.getUniformLocation(program, "ambientColor"), vec4(1, 1, 0, 1));
 	
-	ambientProduct = mult(lightAmbient, materialAmbient);
-	console.log(ambientProduct + " :: AA ");
-	var ambientProductPlace = gl.getUniformLocation(program, 
-       "ambientProduct");
-	console.log("BBB :: " + ambientProductPlace);
-	gl.uniform4fv(ambientProductPlace, flatten(ambientProduct));
+	
 	
     
     //  Configure WebGL
@@ -173,6 +168,16 @@ window.onload = function init()
     
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
+	
+	
+	var lightAmbient = vec4(0, 1, 0, 1.0 );
+	var materialAmbient = vec4( 1.0, 0.0, 1.0, 1.0 );
+	ambientProduct = mult(lightAmbient, materialAmbient);
+	console.log(ambientProduct + " :: AA ");
+	var ambientProductPlace = gl.getUniformLocation(program, 
+       "ambientProduct");
+	console.log("BBB :: " + ambientProductPlace);
+	gl.uniform4fv(ambientProductPlace, flatten(ambientProduct));
     
 	colorLoc = gl.getUniformLocation (program, "color");
 	modelViewLoc = gl.getUniformLocation (program, "modelView");
