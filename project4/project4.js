@@ -47,7 +47,7 @@ var vColor;
 	
 var numVertices  = 36;
 
-var pointsArray = [];
+var spherePointsArray = [];
 var colorsArray = [];
 var texCoordsArray = [];
 
@@ -86,9 +86,9 @@ var texCoord = [
 ];
 
 function triangle(a, b, c) {
-     pointsArray.push(a); 
-     pointsArray.push(b); 
-     pointsArray.push(c);     
+     spherePointsArray.push(a); 
+     spherePointsArray.push(b); 
+     spherePointsArray.push(c);     
      index += 3;
 }
 
@@ -120,27 +120,27 @@ var roadTexture;
 var roadImage;
 
 function quad(a, b, c, d) {
-     //pointsArray.push(vertices[a]); 
+     //spherePointsArray.push(vertices[a]); 
      colorsArray.push(vertexColors[a]); 
 	 texCoordsArray.push(texCoord[0]);
 	 
-     //pointsArray.push(vertices[b]); 
+     //spherePointsArray.push(vertices[b]); 
      colorsArray.push(vertexColors[a]); 
 	 texCoordsArray.push(texCoord[1]);
 	 
-     //pointsArray.push(vertices[c]); 
+     //spherePointsArray.push(vertices[c]); 
      colorsArray.push(vertexColors[a]);    
 	 texCoordsArray.push(texCoord[2]);
 	 
-     //pointsArray.push(vertices[a]); 
+     //spherePointsArray.push(vertices[a]); 
      colorsArray.push(vertexColors[a]); 
 	 texCoordsArray.push(texCoord[0]);
 
-     //pointsArray.push(vertices[c]); 
+     //spherePointsArray.push(vertices[c]); 
      colorsArray.push(vertexColors[a]); 
 	 texCoordsArray.push(texCoord[2]);
 
-     //pointsArray.push(vertices[d]); 
+     //spherePointsArray.push(vertices[d]); 
      colorsArray.push(vertexColors[a]); 
 	 texCoordsArray.push(texCoord[3]);
 }
@@ -237,53 +237,41 @@ window.onload = function init()
 
     
 	sampler = gl.getUniformLocation(program, "uSampler");
-	colorLoc = gl.getUniformLocation (program, "color");
+	colorLoc = gl.getUniformLocation (program, "vColor");
 	modelViewLoc = gl.getUniformLocation (program, "modelView");
 	projectionLoc  = gl.getUniformLocation (program, "projection");
 	
+	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	initSphereBuffer();
+	
+    initVPosition();
+	
+	drawSphere(); 
+	
 	initIndexBuffer();
 	initLightPostBuffers();
 	
 	initColorBuffer();
     	
-    vColor = gl.getAttribLocation( program, "vColor" );
-	gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
-    gl.enableVertexAttribArray( vColor);
-	
+    initVColor();
     initRoadBuffer();
 
 	
-	tBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, flatten(texCoordsArray), gl.STATIC_DRAW);
+	initTexBuffer();
 	
-	vTexCoord = gl.getAttribLocation (program, "vTexCoord");
-	gl.vertexAttribPointer (vTexCoord, 2, gl.FLOAT, false, 0, 0);
-	gl.enableVertexAttribArray(vTexCoord);
-		
-    vPosition = gl.getAttribLocation( program, "vPosition" );
-    gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
-    gl.enableVertexAttribArray( vPosition );
-	
-	
+	initVTexCoord();
 	
     render();
 };
 function render()
-{
-    gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-	
+{	
 	drawRoad();
-	drawSphere(); 
+	
 	drawLampPost();
 	
 	drawLampPostTop();	
 	
-	   
-	requestAnimFrame (render);
 };
 
 function drawRoad() {
@@ -373,7 +361,7 @@ function drawSphere() {
 	//USE THIS FOR TRANSLATION 
 	tz1 = mat4 (1.0, 0.0, 0.0, -cubeSize2+5,
 			   0.0, 1.0, 0.0, -cubeSize2+5,
-			   0.0, 0.0, 1.0, -cubeSize2-10,
+			   0.0, 0.0, 1.0, cubeSize2-10,
 			   0.0, 0.0, 0.0, 1.0);
 			   
 	tz2 = mat4 (1.0, 0.0, 0.0, cubeSize2,
@@ -386,12 +374,10 @@ function drawSphere() {
 	modelView = mult(looking, mult(tz2, tz1));
 	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
 	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
-	
-	
-	
+		
 	for( var i=0; i<index; i+=3)  {
-		gl.uniform4fv(colorLoc, vec4(0.99, 0.72, 0.075, 1));
-       gl.drawArrays( gl.LINE_LOOP, i, 3 );
+		gl.uniform4fv(vColor, vec4(0.99, 0.72, 0.075, 1));
+		gl.drawArrays( gl.LINE_LOOP, i, 3 );
 	}	  
 }
 
@@ -422,7 +408,7 @@ function initRoadBuffer() {
 function initSphereBuffer() {
 	sphereBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, sphereBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, flatten(pointsArray), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, flatten(spherePointsArray), gl.STATIC_DRAW);
 }
 
 function initColorBuffer() {
@@ -460,4 +446,27 @@ function setupLightPostVertices() {
 	   vec4(lampPostWidth, lampPostHeight+1, -lampPostDepth, 1.0), 
 	   vec4(lampPostWidth, lampPostHeight, -lampPostDepth, 1.0)
 	];
+}
+
+function initVColor() {
+	vColor = gl.getAttribLocation( program, "vColor" );
+	gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
+    gl.enableVertexAttribArray( vColor);
+}
+
+function initTexBuffer() {
+	tBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, flatten(texCoordsArray), gl.STATIC_DRAW);
+}
+function initVTexCoord() {
+	vTexCoord = gl.getAttribLocation (program, "vTexCoord");
+	gl.vertexAttribPointer (vTexCoord, 2, gl.FLOAT, false, 0, 0);
+	gl.enableVertexAttribArray(vTexCoord);
+}
+
+function initVPosition() {
+	vPosition = gl.getAttribLocation( program, "vPosition" );
+    gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
+    gl.enableVertexAttribArray( vPosition );
 }
