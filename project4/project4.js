@@ -4,12 +4,13 @@ var gl;
 var colorLoc;
 var modelViewLoc;
 var projectionLoc;
+var useTexturesLoc;
 
 var vertices = [];
 var colors = [];
 var indices = [];
 
-var numTimesToSubdivide = 5;
+var numTimesToSubdivide = 7;
 
 var cubeSize = 10;
 var cubeSize2 = cubeSize / 2.0;
@@ -25,7 +26,6 @@ var projection;
 var modelView;
 var aspect;
 
-var ctm;
 
 var index = 0;
 
@@ -42,12 +42,16 @@ var sampler;
 var tBuffer;
 var vTexCoord;
 
+var nBuffer;
+var vNormal;
+
 var cBuffer;
 var vColor;
 	
 var numVertices  = 36;
 
 var spherePointsArray = [];
+var normalsArray = [];
 var colorsArray = [];
 var texCoordsArray = [];
 
@@ -85,11 +89,55 @@ var texCoord = [
 		vec2(2,0)
 ];
 
+colors = [
+	    vec4(1.0, 0.0, 0.0, 1.0),  // red
+		vec4(1.0, 1.0, 0.0, 1.0),  // yellow
+		vec4(0.0, 1.0, 0.0, 1.0),  // green
+		vec4(0.0, 0.0, 1.0, 1.0),  // blue
+		vec4(1.0, 0.0, 1.0, 1.0),  // magenta
+		vec4(0.0, 1.0, 1.0, 1.0)   // cyan
+	];
+	
+	// Load indices to represent the triangles that will draw each face	
+	indices = [
+	   1, 0, 3, 3, 2, 1,  // front face
+	   2, 3, 7, 7, 6, 2,  // right face
+	   3, 0, 4, 4, 7, 3,  // bottom face
+	   6, 5, 1, 1, 2, 6,  // top face
+	   4, 5, 6, 6, 7, 4,  // back face
+	   5, 4, 0, 0, 1, 5   // left face
+	];
+
+
+var va = vec4(0.0, 0.0, -1.0, 1);
+var vb = vec4(0.0, 0.942809, 0.333333, 1);
+var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
+var vd = vec4(0.816497, -0.471405, 0.333333, 1);
+    
+var lightPosition = vec4(1.0, 1.0, 1.0, 0.0 );
+var lightAmbient = vec4(1, 1, 1, 1.0 );
+var lightDiffuse = vec4( 1.0, 1.0, 1.0, 1.0 );
+var lightSpecular = vec4( 0.1, 0.1, 0.1, 1.0 );
+
+var materialAmbient = vec4( 1.0, 0.0, 1.0, 1.0 );
+var materialDiffuse = vec4( 1.0, 0.8, 0.0, 1.0 );
+var materialSpecular = vec4( 1.0, 0.8, 0.0, 1.0 );
+var materialShininess = 100.0;
+
+var tex;
+var texture;
+
+
+
 function triangle(a, b, c) {
-     spherePointsArray.push(a); 
-     spherePointsArray.push(b); 
-     spherePointsArray.push(c);     
-     index += 3;
+	normalsArray.push(a);
+    normalsArray.push(b);
+    normalsArray.push(c);
+	 
+    spherePointsArray.push(a); 
+    spherePointsArray.push(b); 
+    spherePointsArray.push(c);     
+    index += 3;
 }
 
 function divideTriangle(a, b, c, count) {
@@ -171,36 +219,13 @@ window.onload = function init()
 	
 	setupLightPostVertices();
 	
-	 colors = [
-	    vec4(1.0, 0.0, 0.0, 1.0),  // red
-		vec4(1.0, 1.0, 0.0, 1.0),  // yellow
-		vec4(0.0, 1.0, 0.0, 1.0),  // green
-		vec4(0.0, 0.0, 1.0, 1.0),  // blue
-		vec4(1.0, 0.0, 1.0, 1.0),  // magenta
-		vec4(0.0, 1.0, 1.0, 1.0)   // cyan
-	];
-	
-	// Load indices to represent the triangles that will draw each face	
-	indices = [
-	   1, 0, 3, 3, 2, 1,  // front face
-	   2, 3, 7, 7, 6, 2,  // right face
-	   3, 0, 4, 4, 7, 3,  // bottom face
-	   6, 5, 1, 1, 2, 6,  // top face
-	   4, 5, 6, 6, 7, 4,  // back face
-	   5, 4, 0, 0, 1, 5   // left face
-	];
-	    
+	 	    
     //  Configure WebGL
     gl.viewport( 0, 0, canvas.width, canvas.height );
 	aspect = canvas.width / canvas.height;
     gl.clearColor( 0.2, 0.2, 0.7, 1.0 );
 	gl.enable(gl.DEPTH_TEST);
 	
-	var va = vec4(0.0, 0.0, -1.0, 1);
-    var vb = vec4(0.0, 0.942809, 0.333333, 1);
-    var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
-    var vd = vec4(0.816497, -0.471405, 0.333333, 1);
-    
     
     tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
 	
@@ -210,38 +235,36 @@ window.onload = function init()
     gl.useProgram( program );
 	
 	
-	for (var i=0; i<texSize; i++) {
-	   for (var j=0; j<texSize; j++) {
-	      var patchx = Math.floor(i/(texSize/numRows));
-		  var patchy = Math.floor(j/(texSize/numCols));
-		  var c = (patchx%2 !== patchy%2 ? 255 : 0);
-		  myTexels[4*i*texSize+4*j] = c;
-		  myTexels[4*i*texSize+4*j+1] = c;
-		  myTexels[4*i*texSize+4*j+2] = c;
-		  myTexels[4*i*texSize+4*j+3] = 255;
-		}
-	}
 	
-	var texture = gl.createTexture();
-	gl.bindTexture (gl.TEXTURE_2D, texture);
-	gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, texSize, texSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, myTexels);
-	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
-	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
- 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
- 	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-	//gl.generateMipmap( gl.TEXTURE_2D );
-	gl.uniform1i(gl.getUniformLocation(program, "texMap"), 0);
+	setupTexels();
+	
+	setupTexture();
 	
 
     
 	sampler = gl.getUniformLocation(program, "uSampler");
-	colorLoc = gl.getUniformLocation (program, "vColor");
+	useTexturesLoc = gl.getUniformLocation(program, "useTextures");
+	colorLoc = gl.getUniformLocation (program, "color");
 	modelViewLoc = gl.getUniformLocation (program, "modelView");
 	projectionLoc  = gl.getUniformLocation (program, "projection");
 	
+	
+	ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+	gl.uniform4fv( gl.getUniformLocation(program, 
+       "ambientProduct"),flatten(ambientProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program, 
+       "diffuseProduct"),flatten(diffuseProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program, 
+       "specularProduct"),flatten(specularProduct) );	
+    gl.uniform4fv( gl.getUniformLocation(program, 
+       "lightPosition"),flatten(lightPosition) );
+    gl.uniform1f( gl.getUniformLocation(program, 
+       "shininess"),materialShininess );
+	
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	
 	
 	initSphereBuffer();
 	
@@ -262,6 +285,14 @@ window.onload = function init()
 	
 	initVTexCoord();
 	
+	var nBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer);
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(normalsArray), gl.STATIC_DRAW );
+    
+    var vNormal = gl.getAttribLocation( program, "vNormal" );
+    gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
+    gl.enableVertexAttribArray( vNormal);
+	
     render();
 };
 function render()
@@ -277,6 +308,8 @@ function render()
 function drawRoad() {
 	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
+	gl.uniform1i(useTexturesLoc, true);
+	gl.bindTexture (gl.TEXTURE_2D, texture);
 	
 	//USE THIS FOR TRANSLATION 
 	tz1 = mat4 (1.0, 0.0, 0.0, -cubeSize2,
@@ -303,6 +336,7 @@ function drawRoad() {
 function drawLampPost() {
 	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
+	gl.uniform1i(useTexturesLoc, true);
 	
 	
 	//USE THIS FOR TRANSLATION 
@@ -322,7 +356,7 @@ function drawLampPost() {
 	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
 	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
 	for (var i=0; i<6; i++) {
-		gl.uniform4fv (colorLoc, colors[i]);
+		//gl.uniform4fv (colorLoc, colors[i]);
 		gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 6*i );
 	}
 }
@@ -330,7 +364,7 @@ function drawLampPost() {
 function drawLampPostTop() {
 	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer2 );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
-	
+	gl.uniform1i(useTexturesLoc, true);
 	
 	//USE THIS FOR TRANSLATION 
 	tz1 = mat4 (1.0, 0.0, 0.0, 10.0,
@@ -349,7 +383,7 @@ function drawLampPostTop() {
 	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
 	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
 	for (var i=0; i<6; i++) {
-		gl.uniform4fv (colorLoc, colors[i]);
+		//gl.uniform4fv (colorLoc, colors[i]);
 		gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 6*i );
 	}
 }	
@@ -357,7 +391,8 @@ function drawSphere() {
 
 	gl.bindBuffer( gl.ARRAY_BUFFER, sphereBuffer );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );	
-	
+	gl.uniform1i(useTexturesLoc, false);
+			
 	//USE THIS FOR TRANSLATION 
 	tz1 = mat4 (1.0, 0.0, 0.0, -cubeSize2+5,
 			   0.0, 1.0, 0.0, -cubeSize2+5,
@@ -375,8 +410,8 @@ function drawSphere() {
 	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
 	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
 		
-	for( var i=0; i<index; i+=3)  {
-		gl.uniform4fv(vColor, vec4(0.99, 0.72, 0.075, 1));
+	gl.uniform4fv(colorLoc, vec4(0.99, 0.72, 0.075, 1));
+	for( var i=0; i<index; i+=3)  {		
 		gl.drawArrays( gl.LINE_LOOP, i, 3 );
 	}	  
 }
@@ -449,9 +484,9 @@ function setupLightPostVertices() {
 }
 
 function initVColor() {
-	vColor = gl.getAttribLocation( program, "vColor" );
-	gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
-    gl.enableVertexAttribArray( vColor);
+	//vColor = gl.getAttribLocation( program, "vColor" );
+	//gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
+    //gl.enableVertexAttribArray( vColor);
 }
 
 function initTexBuffer() {
@@ -469,4 +504,32 @@ function initVPosition() {
 	vPosition = gl.getAttribLocation( program, "vPosition" );
     gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vPosition );
+}
+
+function setupTexture() {
+	texture = gl.createTexture();
+	gl.bindTexture (gl.TEXTURE_2D, texture);
+	gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, texSize, texSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, myTexels);
+	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
+ 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+ 	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	//gl.generateMipmap( gl.TEXTURE_2D );
+	gl.uniform1i(gl.getUniformLocation(program, "texMap"), 0);
+}
+
+function setupTexels() {
+	for (var i=0; i<texSize; i++) {
+	   for (var j=0; j<texSize; j++) {
+	      var patchx = Math.floor(i/(texSize/numRows));
+		  var patchy = Math.floor(j/(texSize/numCols));
+		  var c = (patchx%2 !== patchy%2 ? 255 : 0);
+		  myTexels[4*i*texSize+4*j] = c;
+		  myTexels[4*i*texSize+4*j+1] = c;
+		  myTexels[4*i*texSize+4*j+2] = c;
+		  myTexels[4*i*texSize+4*j+3] = 255;
+		}
+	}
 }
