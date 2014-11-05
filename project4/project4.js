@@ -10,7 +10,7 @@ var vertices = [];
 var colors = [];
 var indices = [];
 
-var numTimesToSubdivide = 7;
+var numTimesToSubdivide = 5;
 
 var cubeSize = 10;
 var cubeSize2 = cubeSize / 2.0;
@@ -48,7 +48,7 @@ var vNormal;
 var cBuffer;
 var vColor;
 	
-var numVertices  = 36;
+var numVertices = 36;
 
 var spherePointsArray = [];
 var normalsArray = [];
@@ -89,6 +89,8 @@ var texCoord = [
 		vec2(2,0)
 ];
 
+var transx = 0, transy = 0, transz = 0;
+
 colors = [
 	    vec4(1.0, 0.0, 0.0, 1.0),  // red
 		vec4(1.0, 1.0, 0.0, 1.0),  // yellow
@@ -114,10 +116,10 @@ var vb = vec4(0.0, 0.942809, 0.333333, 1);
 var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
 var vd = vec4(0.816497, -0.471405, 0.333333, 1);
     
-var lightPosition = vec4(1.0, 1.0, 1.0, 0.0 );
+var lightPosition = vec4(4.0, 10.0, 100.0, 0.0 );
 var lightAmbient = vec4(1, 1, 1, 1.0 );
 var lightDiffuse = vec4( 1.0, 1.0, 1.0, 1.0 );
-var lightSpecular = vec4( 0.1, 0.1, 0.1, 1.0 );
+var lightSpecular = vec4( 1, 1, 1, 1.0 );
 
 var materialAmbient = vec4( 1.0, 0.0, 1.0, 1.0 );
 var materialDiffuse = vec4( 1.0, 0.8, 0.0, 1.0 );
@@ -205,6 +207,29 @@ function colorCube()
     quad( 5, 4, 0, 1 );
 }
 
+window.onkeydown = function(e) {
+	var key = e.keyCode ? e.keyCode : e.which;
+	if(key == 37) {
+		console.log("left");
+		transx += 1;
+	} else if(key == 38) {
+		console.log("up");
+		transz += 1;
+	} else if(key == 39) {
+		console.log("right");
+		transx -= 1;
+	} else if(key == 40) {
+	console.log("down");
+		transz -= 1;
+	}
+	
+	
+	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	drawSphere(transx,transy,transz);
+	drawRoad(transx,transy,transz);
+	drawLampPost(transx,transy,transz);
+	drawLampPostTop(transx,transy,transz);
+}
 window.onload = function init()
 {
     canvas = document.getElementById( "gl-canvas" );
@@ -270,7 +295,7 @@ window.onload = function init()
 	
     initVPosition();
 	
-	drawSphere(); 
+	drawSphere(0,0,0); 
 	
 	initIndexBuffer();
 	initLightPostBuffers();
@@ -297,24 +322,24 @@ window.onload = function init()
 };
 function render()
 {	
-	drawRoad();
+	drawRoad(0, 0, 0);
 	
-	drawLampPost();
+	drawLampPost(0, 0, 0);
 	
-	drawLampPostTop();	
+	drawLampPostTop(0, 0, 0);	
 	
 };
 
-function drawRoad() {
+function drawRoad(x,y,z) {
 	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
 	gl.uniform1i(useTexturesLoc, true);
 	gl.bindTexture (gl.TEXTURE_2D, texture);
 	
 	//USE THIS FOR TRANSLATION 
-	tz1 = mat4 (1.0, 0.0, 0.0, -cubeSize2,
-			   0.0, 1.0, 0.0, -cubeSize2,
-			   0.0, 0.0, 1.0, -cubeSize2+20,
+	tz1 = mat4 (1.0, 0.0, 0.0, -cubeSize2+x,
+			   0.0, 1.0, 0.0, -cubeSize2+y,
+			   0.0, 0.0, 1.0, -cubeSize2+20+z,
 			   0.0, 0.0, 0.0, 1.0);
 			   
 	tz2 = mat4 (1.0, 0.0, 0.0, cubeSize2,
@@ -333,16 +358,16 @@ function drawRoad() {
 	}
 }
 
-function drawLampPost() {
+function drawLampPost(x,y,z) {
 	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
 	gl.uniform1i(useTexturesLoc, true);
 	
 	
 	//USE THIS FOR TRANSLATION 
-	tz1 = mat4 (1.0, 0.0, 0.0, 10.0,
-			   0.0, 1.0, 0.0, 0.0,
-			   0.0, 0.0, 1.0, 0,
+	tz1 = mat4 (1.0, 0.0, 0.0, 10.0+x,
+			   0.0, 1.0, 0.0, 0.0+y,
+			   0.0, 0.0, 1.0, 0+z,
 			   0.0, 0.0, 0.0, 1.0);
 			   
 	tz2 = mat4 (1.0, 0.0, 0.0, 0,
@@ -361,15 +386,15 @@ function drawLampPost() {
 	}
 }
 
-function drawLampPostTop() {
+function drawLampPostTop(x,y,z) {
 	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer2 );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
 	gl.uniform1i(useTexturesLoc, true);
 	
 	//USE THIS FOR TRANSLATION 
-	tz1 = mat4 (1.0, 0.0, 0.0, 10.0,
-			   0.0, 1.0, 0.0, 0.0,
-			   0.0, 0.0, 1.0, 0,
+	tz1 = mat4 (1.0, 0.0, 0.0, 10.0+x,
+			   0.0, 1.0, 0.0, 0.0+y,
+			   0.0, 0.0, 1.0, 0+z,
 			   0.0, 0.0, 0.0, 1.0);
 			   
 	tz2 = mat4 (1.0, 0.0, 0.0, 0,
@@ -387,16 +412,16 @@ function drawLampPostTop() {
 		gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 6*i );
 	}
 }	
-function drawSphere() {
+function drawSphere(x,y,z) {
 
 	gl.bindBuffer( gl.ARRAY_BUFFER, sphereBuffer );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );	
 	gl.uniform1i(useTexturesLoc, false);
 			
 	//USE THIS FOR TRANSLATION 
-	tz1 = mat4 (1.0, 0.0, 0.0, -cubeSize2+5,
-			   0.0, 1.0, 0.0, -cubeSize2+5,
-			   0.0, 0.0, 1.0, cubeSize2-10,
+	tz1 = mat4 (1.0, 0.0, 0.0, -cubeSize2+5+x,
+			   0.0, 1.0, 0.0, -cubeSize2+5+y,
+			   0.0, 0.0, 1.0, cubeSize2-10+z,
 			   0.0, 0.0, 0.0, 1.0);
 			   
 	tz2 = mat4 (1.0, 0.0, 0.0, cubeSize2,
