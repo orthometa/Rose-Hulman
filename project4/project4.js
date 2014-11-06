@@ -258,35 +258,16 @@ window.onload = function init()
     
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
-	
-	
-	
+		
 	setupTexels();
 	
 	setupTexture();
 	
 
     
-	sampler = gl.getUniformLocation(program, "uSampler");
-	useTexturesLoc = gl.getUniformLocation(program, "useTextures");
-	colorLoc = gl.getUniformLocation (program, "color");
-	modelViewLoc = gl.getUniformLocation (program, "modelView");
-	projectionLoc  = gl.getUniformLocation (program, "projection");
+	getUniformLocs();
 	
-	
-	ambientProduct = mult(lightAmbient, materialAmbient);
-    diffuseProduct = mult(lightDiffuse, materialDiffuse);
-    specularProduct = mult(lightSpecular, materialSpecular);
-	gl.uniform4fv( gl.getUniformLocation(program, 
-       "ambientProduct"),flatten(ambientProduct) );
-    gl.uniform4fv( gl.getUniformLocation(program, 
-       "diffuseProduct"),flatten(diffuseProduct) );
-    gl.uniform4fv( gl.getUniformLocation(program, 
-       "specularProduct"),flatten(specularProduct) );	
-    gl.uniform4fv( gl.getUniformLocation(program, 
-       "lightPosition"),flatten(lightPosition) );
-    gl.uniform1f( gl.getUniformLocation(program, 
-       "shininess"),materialShininess );
+	calculateLightProducts();
 	
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
@@ -413,7 +394,6 @@ function drawLampPostTop(x,y,z) {
 	}
 }	
 function drawSphere(x,y,z) {
-
 	gl.bindBuffer( gl.ARRAY_BUFFER, sphereBuffer );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );	
 	gl.uniform1i(useTexturesLoc, false);
@@ -557,4 +537,29 @@ function setupTexels() {
 		  myTexels[4*i*texSize+4*j+3] = 255;
 		}
 	}
+}
+
+function getUniformLocs() {
+	sampler = gl.getUniformLocation(program, "uSampler");
+	useTexturesLoc = gl.getUniformLocation(program, "useTextures");
+	colorLoc = gl.getUniformLocation (program, "color");
+	modelViewLoc = gl.getUniformLocation (program, "modelView");
+	projectionLoc  = gl.getUniformLocation (program, "projection");
+}
+
+function calculateLightProducts() {
+	
+	ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+	gl.uniform4fv( gl.getUniformLocation(program, 
+       "ambientProduct"),flatten(ambientProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program, 
+       "diffuseProduct"),flatten(diffuseProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program, 
+       "specularProduct"),flatten(specularProduct) );	
+    gl.uniform4fv( gl.getUniformLocation(program, 
+       "lightPosition"),flatten(lightPosition) );
+    gl.uniform1f( gl.getUniformLocation(program, 
+       "shininess"),materialShininess );
 }
