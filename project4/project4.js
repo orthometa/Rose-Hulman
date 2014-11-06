@@ -10,7 +10,7 @@ var vertices = [];
 var colors = [];
 var indices = [];
 
-var numTimesToSubdivide = 3;
+var numTimesToSubdivide = 4;
 
 var cubeSize = 10;
 var cubeSize2 = cubeSize / 2.0;
@@ -219,13 +219,7 @@ window.onkeydown = function(e) {
 		transz -= 1;
 	}
 	
-	
-	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-	drawSphere(transx,transy,transz);
-	drawRoad(transx,transy,transz);
-	drawLampPost(transx,transy,transz);
-	drawLampPostTop(transx,transy,transz);
+	render(transx,transy,transz);
 }
 window.onload = function init()
 {
@@ -234,81 +228,54 @@ window.onload = function init()
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
-	// Load vertices and colors for cube faces
-	colorCube();
-	
-	
-	
-	setupLightPostVertices();
-	
-	 	    
     //  Configure WebGL
     gl.viewport( 0, 0, canvas.width, canvas.height );
 	aspect = canvas.width / canvas.height;
     gl.clearColor( 0.2, 0.2, 0.7, 1.0 );
 	gl.enable(gl.DEPTH_TEST);
 	
-    
-    tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
-	
-    //  Load shaders and initialize attribute buffers
-    
+    //  Load shaders and initialize attribute buffers    
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
 		
 	setupTexels();
-	
 	setupTexture();
-	
-
-    
+	    
 	getUniformLocs();
 	
 	calculateLightProducts();
-	
-	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
-	
+		
+	tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
 	initSphereBuffer();
 	
-    initVPosition();
+	// Load vertices and colors for cube faces
+	colorCube();
+	initRoadBuffer();
 	
-	
-	
-	initIndexBuffer();
-	
+	setupLightPostVertices();
 	initLightPostBuffers();
 	
+	initVPosition();
+	
 	initColorBuffer();
-    	
     initVColor();
 	
-    initRoadBuffer();
-	
-	
 	initTexBuffer();
-	
 	initVTexCoord();
 	
-	var nBuffer = gl.createBuffer();
-    gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer);
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(normalsArray), gl.STATIC_DRAW );
-    
-    var vNormal = gl.getAttribLocation( program, "vNormal" );
-    gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
-    gl.enableVertexAttribArray( vNormal);
+	initIndexBuffer();
+	initNormalsBuffer();
+    initVNormal();
 	
-    render();
+    render(0, 0, 0);
 };
-function render()
+function render(x,y,z)
 {	
-	drawSphere(0,0,0); 
-	drawRoad(0, 0, 0);
-	
-	drawLampPost(0, 0, 0);
-	
-	drawLampPostTop(0, 0, 0);	
-	
+	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	drawSphere(x,y,z); 
+	drawRoad(x,y,z);	
+	drawLampPost(x,y,z);	
+	drawLampPostTop(x,y,z);		
 };
 
 function drawRoad(x,y,z) {
@@ -456,7 +423,6 @@ function initSphereBuffer() {
 }
 
 function initColorBuffer() {
-	
 	cBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(colorsArray), gl.STATIC_DRAW );
@@ -566,4 +532,16 @@ function calculateLightProducts() {
        "lightPosition"),flatten(lightPosition) );
     gl.uniform1f( gl.getUniformLocation(program, 
        "shininess"),materialShininess );
+}
+
+function initNormalsBuffer() {
+	var nBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer);
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(normalsArray), gl.STATIC_DRAW );
+}
+
+function initVNormal() {
+    var vNormal = gl.getAttribLocation( program, "vNormal" );
+    gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
+    gl.enableVertexAttribArray( vNormal);
 }
