@@ -10,7 +10,7 @@ var vertices = [];
 var colors = [];
 var indices = [];
 
-var numTimesToSubdivide = 5;
+var numTimesToSubdivide = 3;
 
 var cubeSize = 10;
 var cubeSize2 = cubeSize / 2.0;
@@ -210,21 +210,18 @@ function colorCube()
 window.onkeydown = function(e) {
 	var key = e.keyCode ? e.keyCode : e.which;
 	if(key == 37) {
-		console.log("left");
 		transx += 1;
 	} else if(key == 38) {
-		console.log("up");
 		transz += 1;
 	} else if(key == 39) {
-		console.log("right");
 		transx -= 1;
 	} else if(key == 40) {
-	console.log("down");
 		transz -= 1;
 	}
 	
 	
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
 	drawSphere(transx,transy,transz);
 	drawRoad(transx,transy,transz);
 	drawLampPost(transx,transy,transz);
@@ -276,16 +273,18 @@ window.onload = function init()
 	
     initVPosition();
 	
-	drawSphere(0,0,0); 
+	
 	
 	initIndexBuffer();
+	
 	initLightPostBuffers();
 	
 	initColorBuffer();
     	
     initVColor();
+	
     initRoadBuffer();
-
+	
 	
 	initTexBuffer();
 	
@@ -303,6 +302,7 @@ window.onload = function init()
 };
 function render()
 {	
+	drawSphere(0,0,0); 
 	drawRoad(0, 0, 0);
 	
 	drawLampPost(0, 0, 0);
@@ -314,6 +314,7 @@ function render()
 function drawRoad(x,y,z) {
 	gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
+	gl.enableVertexAttribArray(vTexCoord);
 	gl.uniform1i(useTexturesLoc, true);
 	gl.bindTexture (gl.TEXTURE_2D, texture);
 	
@@ -342,6 +343,7 @@ function drawRoad(x,y,z) {
 function drawLampPost(x,y,z) {
 	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
+	gl.enableVertexAttribArray(vTexCoord);
 	gl.uniform1i(useTexturesLoc, true);
 	
 	
@@ -370,6 +372,7 @@ function drawLampPost(x,y,z) {
 function drawLampPostTop(x,y,z) {
 	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer2 );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
+	gl.enableVertexAttribArray(vTexCoord);
 	gl.uniform1i(useTexturesLoc, true);
 	
 	//USE THIS FOR TRANSLATION 
@@ -396,12 +399,13 @@ function drawLampPostTop(x,y,z) {
 function drawSphere(x,y,z) {
 	gl.bindBuffer( gl.ARRAY_BUFFER, sphereBuffer );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );	
+	gl.disableVertexAttribArray(vTexCoord);	
 	gl.uniform1i(useTexturesLoc, false);
 			
 	//USE THIS FOR TRANSLATION 
 	tz1 = mat4 (1.0, 0.0, 0.0, -cubeSize2+5+x,
 			   0.0, 1.0, 0.0, -cubeSize2+5+y,
-			   0.0, 0.0, 1.0, cubeSize2-10+z,
+			   0.0, 0.0, 1.0, cubeSize2-50+z,
 			   0.0, 0.0, 0.0, 1.0);
 			   
 	tz2 = mat4 (1.0, 0.0, 0.0, cubeSize2,
