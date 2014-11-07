@@ -67,7 +67,7 @@ main()
 	if(useTextures) {
 		gl_FragColor = fColor * texture2D(texMap, fTexCoord); //color;//fColor*(texture2D(Tex0, fTexCoord)*texture2D(Tex1, fTexCoord)); //color;//texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));//color;// * fColor; // * vLightWeighting;
 	} else {
-		gl_FragColor = color;
+		gl_FragColor = fColor;
 	}
 }
 </script>

@@ -110,16 +110,24 @@ colors = [
 	   5, 4, 0, 0, 1, 5   // left face
 	];
 
+/*
+normalsArray.push([0, 0, 1, 1]);
+normalsArray.push([1, 0, 0, 1]);
+normalsArray.push([0, -1, 0, 1]);
+normalsArray.push([0, 1, 0, 1]);
+normalsArray.push([0, 0, -1, 1]);
+normalsArray.push([-1, 0, 0, 1]);
+*/
 
 var va = vec4(0.0, 0.0, -1.0, 1);
 var vb = vec4(0.0, 0.942809, 0.333333, 1);
 var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
 var vd = vec4(0.816497, -0.471405, 0.333333, 1);
     
-var lightPosition = vec4(4.0, 10.0, 100.0, 0.0 );
-var lightAmbient = vec4(1, 1, 1, 1.0 );
-var lightDiffuse = vec4( 1.0, 1.0, 1.0, 1.0 );
-var lightSpecular = vec4( 1, 1, 1, 1.0 );
+var lightPosition = vec4(30.0, 0.0, -100.0, 0.0 );
+var lightAmbient = vec4(0.8, 0.8, 0.8, 1.0 );
+var lightDiffuse = vec4( 1, 1, 1, 1.0 );
+var lightSpecular = vec4( 0.51, 0.51, 0.51, 1.0 );
 
 var materialAmbient = vec4( 1.0, 0.0, 1.0, 1.0 );
 var materialDiffuse = vec4( 1.0, 0.8, 0.0, 1.0 );
@@ -388,7 +396,7 @@ function drawSphere(x,y,z) {
 		
 	gl.uniform4fv(colorLoc, vec4(0.99, 0.72, 0.075, 1));
 	for( var i=0; i<index; i+=3)  {		
-		gl.drawArrays( gl.LINE_LOOP, i, 3 );
+		gl.drawArrays( gl.TRIANGLES, i, 3 );
 	}	  
 }
 
