@@ -19,6 +19,8 @@ uniform float shininess;
 uniform   mat4 modelView;
 uniform   mat4 projection;
 
+uniform   vec3 theta;
+
 void
 main()
 {
@@ -44,7 +46,27 @@ main()
     if( dot(L, N) < 0.0 ) {
 		specular = vec4(0.0, 0.0, 0.0, 1.0);
     } 
-    gl_Position = projection * modelView * vPosition;// * scale + translation;
+	
+	vec3 angles = radians(theta);
+	vec3 c = cos(angles);
+	vec3 s = sin(angles);
+	
+	mat4 rx = mat4 (1.0, 0.0, 0.0, 0.0,
+	               0.0, c.x, s.x, 0.0,
+				   0.0, -s.x, c.x, 0.0,
+				   0.0, 0.0, 0.0, 1.0);
+				   
+	mat4 ry = mat4 (c.y, 0.0, -s.y, 0.0,
+					0.0, 1.0, 0.0, 0.0,
+					s.y, 0.0, c.y, 0.0,
+					0.0, 0.0, 0.0, 1.0);
+	
+	mat4 rz = mat4 (c.z, -s.z, 0.0, 0.0,
+					s.z, c.z, 0.0, 0.0,
+					0.0, 0.0, 1.0, 0.0,
+					0.0, 0.0, 0.0, 1.0);
+	
+    gl_Position = rz * ry * rx * projection * modelView * vPosition;// * scale + translation;
 	fTexCoord = vTexCoord;
 	fColor = ambient + diffuse + specular;//vColor;
 }
@@ -67,7 +89,7 @@ main()
 	if(useTextures) {
 		gl_FragColor = fColor * texture2D(texMap, fTexCoord); //color;//fColor*(texture2D(Tex0, fTexCoord)*texture2D(Tex1, fTexCoord)); //color;//texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));//color;// * fColor; // * vLightWeighting;
 	} else {
-		gl_FragColor = fColor;
+		gl_FragColor = color * fColor;
 	}
 }
 </script>

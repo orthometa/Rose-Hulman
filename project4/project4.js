@@ -138,6 +138,9 @@ var tex;
 var texture;
 
 
+var thetaLoc;
+var theta = [];
+
 
 function triangle(a, b, c) {
 	normalsArray.push(a);
@@ -225,6 +228,14 @@ window.onkeydown = function(e) {
 		transx -= 1;
 	} else if(key == 40) {
 		transz -= 1;
+	} else if(key == 65) {
+		theta[1] -= 10;
+	} else if(key == 68) {
+		theta[1] += 10;
+	} else if(key == 87) {
+		theta[0] += 10;
+	} else if(key == 83) {
+		theta[0] -= 10;
 	}
 	
 	render(transx,transy,transz);
@@ -245,7 +256,13 @@ window.onload = function init()
     //  Load shaders and initialize attribute buffers    
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
-		
+	
+	theta[0] = 0.0;
+	theta[1] = 0.0;
+	theta[2] = 0.0;	
+	thetaLoc = gl.getUniformLocation (program, "theta");
+	
+	
 	setupTexels();
 	setupTexture();
 	    
@@ -280,10 +297,12 @@ window.onload = function init()
 function render(x,y,z)
 {	
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	gl.uniform3fv(thetaLoc, flatten(theta));
 	drawSphere(x,y,z); 
 	drawRoad(x,y,z);	
 	drawLampPost(x,y,z);	
 	drawLampPostTop(x,y,z);		
+	//requestAnimFrame(render);
 };
 
 function drawRoad(x,y,z) {
@@ -318,8 +337,8 @@ function drawRoad(x,y,z) {
 function drawLampPost(x,y,z) {
 	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
-	gl.enableVertexAttribArray(vTexCoord);
-	gl.uniform1i(useTexturesLoc, true);
+	gl.disableVertexAttribArray(vTexCoord);
+	gl.uniform1i(useTexturesLoc, false);
 	
 	
 	//USE THIS FOR TRANSLATION 
@@ -339,7 +358,7 @@ function drawLampPost(x,y,z) {
 	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
 	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
 	for (var i=0; i<6; i++) {
-		//gl.uniform4fv (colorLoc, colors[i]);
+		gl.uniform4fv (colorLoc, colors[5-i]);
 		gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 6*i );
 	}
 }
@@ -347,8 +366,8 @@ function drawLampPost(x,y,z) {
 function drawLampPostTop(x,y,z) {
 	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer2 );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
-	gl.enableVertexAttribArray(vTexCoord);
-	gl.uniform1i(useTexturesLoc, true);
+	gl.disableVertexAttribArray(vTexCoord);
+	gl.uniform1i(useTexturesLoc, false);
 	
 	//USE THIS FOR TRANSLATION 
 	tz1 = mat4 (1.0, 0.0, 0.0, 10.0+x,
@@ -367,7 +386,7 @@ function drawLampPostTop(x,y,z) {
 	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
 	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
 	for (var i=0; i<6; i++) {
-		//gl.uniform4fv (colorLoc, colors[i]);
+		gl.uniform4fv (colorLoc, colors[i]);
 		gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 6*i );
 	}
 }	
@@ -389,7 +408,7 @@ function drawSphere(x,y,z) {
 			   0.0, 0.0, 0.0, 1.0);
 	
 	looking = lookAt (vec3(cubeSize2,cubeSize2,4*cubeSize), vec3(cubeSize2,cubeSize2,0), vec3(0.0, 1.0, 0.0));
-	projection = perspective (45.0, aspect, 1, 1000*cubeSize);
+	projection = perspective (90.0, aspect, 1, 1000*cubeSize);
 	modelView = mult(looking, mult(tz2, tz1));
 	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
 	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
