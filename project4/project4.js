@@ -140,7 +140,8 @@ var texture;
 
 var thetaLoc;
 var theta = [];
-
+var lookx = 5;
+var looky = 5;
 
 function triangle(a, b, c) {
 	normalsArray.push(a);
@@ -229,13 +230,18 @@ window.onkeydown = function(e) {
 	} else if(key == 40) {
 		transz -= 1;
 	} else if(key == 65) {
-		theta[1] -= 10;
+		//theta[1] -= 10;
+		lookx -= 1;
 	} else if(key == 68) {
-		theta[1] += 10;
+		//theta[1] += 10;
+		lookx += 1;
 	} else if(key == 87) {
-		theta[0] += 10;
+		//theta[0] += 10;
+		looky += 1;
 	} else if(key == 83) {
-		theta[0] -= 10;
+		//theta[0] -= 10;
+		looky -= 1;
+		
 	}
 	
 	render(transx,transy,transz);
@@ -323,11 +329,7 @@ function drawRoad(x,y,z) {
 			   0.0, 0.0, 1.0, cubeSize2,
 			   0.0, 0.0, 0.0, 1.0);
 	
-	looking = lookAt (vec3(cubeSize2,cubeSize2,4*cubeSize), vec3(cubeSize2,cubeSize2,0), vec3(0.0, 1.0, 0.0));
-	projection = perspective (45.0, aspect, 1, 1000*cubeSize);
-	modelView = mult(looking, mult(tz2, tz1));
-	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
-	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
+	setupProjections(tz1, tz2);
 	for (var i=0; i<6; i++) {
 		gl.uniform4fv (colorLoc, colors[i]);
 		gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 6*i );
@@ -344,7 +346,7 @@ function drawLampPost(x,y,z) {
 	//USE THIS FOR TRANSLATION 
 	tz1 = mat4 (1.0, 0.0, 0.0, 10.0+x,
 			   0.0, 1.0, 0.0, 0.0+y,
-			   0.0, 0.0, 1.0, 0+z,
+			   0.0, 0.0, 1.0, -10+z,
 			   0.0, 0.0, 0.0, 1.0);
 			   
 	tz2 = mat4 (1.0, 0.0, 0.0, 0,
@@ -352,11 +354,7 @@ function drawLampPost(x,y,z) {
 			   0.0, 0.0, 1.0, 0,
 			   0.0, 0.0, 0.0, 1.0);
 	
-	looking = lookAt (vec3(cubeSize2,cubeSize2,4*cubeSize), vec3(cubeSize2,cubeSize2,0), vec3(0.0, 1.0, 0.0));
-	projection = perspective (45.0, aspect, 1, 1000*cubeSize);
-	modelView = mult(looking, mult(tz2, tz1));
-	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
-	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
+	setupProjections(tz1, tz2);
 	for (var i=0; i<6; i++) {
 		gl.uniform4fv (colorLoc, colors[5-i]);
 		gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 6*i );
@@ -372,7 +370,7 @@ function drawLampPostTop(x,y,z) {
 	//USE THIS FOR TRANSLATION 
 	tz1 = mat4 (1.0, 0.0, 0.0, 10.0+x,
 			   0.0, 1.0, 0.0, 0.0+y,
-			   0.0, 0.0, 1.0, 0+z,
+			   0.0, 0.0, 1.0, -10+z,
 			   0.0, 0.0, 0.0, 1.0);
 			   
 	tz2 = mat4 (1.0, 0.0, 0.0, 0,
@@ -380,11 +378,7 @@ function drawLampPostTop(x,y,z) {
 			   0.0, 0.0, 1.0, 0,
 			   0.0, 0.0, 0.0, 1.0);
 	
-	looking = lookAt (vec3(cubeSize2,cubeSize2,4*cubeSize), vec3(cubeSize2,cubeSize2,0), vec3(0.0, 1.0, 0.0));
-	projection = perspective (45.0, aspect, 1, 1000*cubeSize);
-	modelView = mult(looking, mult(tz2, tz1));
-	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
-	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
+	setupProjections(tz1, tz2);
 	for (var i=0; i<6; i++) {
 		gl.uniform4fv (colorLoc, colors[i]);
 		gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 6*i );
@@ -406,12 +400,7 @@ function drawSphere(x,y,z) {
 			   0.0, 1.0, 0.0, cubeSize2,
 			   0.0, 0.0, 1.0, cubeSize2,
 			   0.0, 0.0, 0.0, 1.0);
-	
-	looking = lookAt (vec3(cubeSize2,cubeSize2,4*cubeSize), vec3(cubeSize2,cubeSize2,0), vec3(0.0, 1.0, 0.0));
-	projection = perspective (90.0, aspect, 1, 1000*cubeSize);
-	modelView = mult(looking, mult(tz2, tz1));
-	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
-	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
+	setupProjections(tz1, tz2);
 		
 	gl.uniform4fv(colorLoc, vec4(0.99, 0.72, 0.075, 1));
 	for( var i=0; i<index; i+=3)  {		
@@ -571,4 +560,12 @@ function initVNormal() {
     var vNormal = gl.getAttribLocation( program, "vNormal" );
     gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vNormal);
+}
+
+function setupProjections(tz1, tz2) {
+	looking = lookAt (vec3(5,5,10), vec3(lookx,looky,0), vec3(0.0, 1.0, 0.0));
+	projection = perspective (90.0, aspect, 1, 1000*cubeSize);
+	modelView = mult(looking, mult(tz2, tz1));
+	gl.uniformMatrix4fv (modelViewLoc, false, flatten(modelView));
+	gl.uniformMatrix4fv (projectionLoc, false, flatten(projection));
 }
