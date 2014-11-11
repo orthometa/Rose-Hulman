@@ -39,10 +39,15 @@ var lpostBuffer2;
 var buffer;
 var sampler;
 
+
+var lpostBuffers = [];
+var lpostVertices = [];
+
 var tBuffer;
 var vTexCoord;
 
 var nBuffer;
+var nBuffer2;
 var vNormal;
 
 var cBuffer;
@@ -52,6 +57,7 @@ var numVertices = 36;
 
 var spherePointsArray = [];
 var normalsArray = [];
+var lampNormalsArray = [];
 var colorsArray = [];
 var texCoordsArray = [];
 
@@ -59,6 +65,8 @@ var texSize = 64;
 var numRows = 8;
 var numCols = 8;
 var myTexels = new Uint8Array(4*texSize*texSize);
+
+var shootingBuffer;
 
 var vertices = [
 	   vec4(0.0, 0.0-10, cubeSize, 1.0),
@@ -124,7 +132,7 @@ var vb = vec4(0.0, 0.942809, 0.333333, 1);
 var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
 var vd = vec4(0.816497, -0.471405, 0.333333, 1);
     
-var lightPosition = vec4(30.0, 0.0, -100.0, 0.0 );
+var lightPosition = vec4(30.0, 100.0, -100.0, 0.0 );
 var lightAmbient = vec4(0.8, 0.8, 0.8, 1.0 );
 var lightDiffuse = vec4( 1, 1, 1, 1.0 );
 var lightSpecular = vec4( 0.51, 0.51, 0.51, 1.0 );
@@ -182,33 +190,33 @@ var roadTexture;
 var roadImage;
 
 function quad(a, b, c, d) {
-     //spherePointsArray.push(vertices[a]); 
+	
+     lampNormalsArray.push(vertices[a]); 
      colorsArray.push(vertexColors[a]); 
 	 texCoordsArray.push(texCoord[0]);
 	 
-     //spherePointsArray.push(vertices[b]); 
+     lampNormalsArray.push(vertices[b]); 
      colorsArray.push(vertexColors[a]); 
 	 texCoordsArray.push(texCoord[1]);
 	 
-     //spherePointsArray.push(vertices[c]); 
+     lampNormalsArray.push(vertices[c]); 
      colorsArray.push(vertexColors[a]);    
 	 texCoordsArray.push(texCoord[2]);
 	 
-     //spherePointsArray.push(vertices[a]); 
+     lampNormalsArray.push(vertices[a]); 
      colorsArray.push(vertexColors[a]); 
 	 texCoordsArray.push(texCoord[0]);
 
-     //spherePointsArray.push(vertices[c]); 
+     lampNormalsArray.push(vertices[c]); 
      colorsArray.push(vertexColors[a]); 
 	 texCoordsArray.push(texCoord[2]);
 
-     //spherePointsArray.push(vertices[d]); 
+     lampNormalsArray.push(vertices[d]); 
      colorsArray.push(vertexColors[a]); 
 	 texCoordsArray.push(texCoord[3]);
 }
 
 // Each face determines two triangles
-
 function colorCube()
 {
     quad( 1, 0, 3, 2 );
@@ -240,10 +248,8 @@ window.onkeydown = function(e) {
 		looky += 1;
 	} else if(key == 83) {
 		//theta[0] -= 10;
-		looky -= 1;
-		
-	}
-	
+		looky -= 1;	
+	}	
 	render(transx,transy,transz);
 }
 window.onload = function init()
@@ -283,8 +289,8 @@ window.onload = function init()
 	colorCube();
 	initRoadBuffer();
 	
-	setupLightPostVertices();
-	initLightPostBuffers();
+	setupLightPostVertices(30);
+	initLightPostBuffers(30);
 	
 	initVPosition();
 	
@@ -302,13 +308,15 @@ window.onload = function init()
 };
 function render(x,y,z)
 {	
+	
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	
+	gl.disableVertexAttribArray( vNormal);
 	gl.uniform3fv(thetaLoc, flatten(theta));
 	drawSphere(x,y,z); 
 	drawRoad(x,y,z);	
-	drawLampPost(x,y,z);	
-	drawLampPostTop(x,y,z);		
-	//requestAnimFrame(render);
+	for(var i = 0; i < lpostBuffers.length; i++)
+		drawLampPost(x,y,z,i);		
 };
 
 function drawRoad(x,y,z) {
@@ -335,16 +343,23 @@ function drawRoad(x,y,z) {
 		gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 6*i );
 	}
 }
+function drawLampPost(x, y, z, nr) {
+	drawLampPostBottom(x, y, z, nr);
+	drawLampPostTop(x, y, z, nr);
+}
 
-function drawLampPost(x,y,z) {
-	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer );
+function drawLampPostBottom(x,y,z, nr) {
+	if(nr % 2 == 0) {
+		x -= 9;
+	}
+	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffers[nr][0] );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
 	gl.disableVertexAttribArray(vTexCoord);
 	gl.uniform1i(useTexturesLoc, false);
 	
 	
 	//USE THIS FOR TRANSLATION 
-	tz1 = mat4 (1.0, 0.0, 0.0, 10.0+x,
+	tz1 = mat4 (1.0, 0.0, 0.0, 9.0+x,
 			   0.0, 1.0, 0.0, 0.0+y,
 			   0.0, 0.0, 1.0, -10+z,
 			   0.0, 0.0, 0.0, 1.0);
@@ -361,14 +376,17 @@ function drawLampPost(x,y,z) {
 	}
 }
 
-function drawLampPostTop(x,y,z) {
-	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer2 );
+function drawLampPostTop(x,y,z, nr) {
+	if(nr % 2 == 0) {
+		x -= 7;
+	}
+	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffers[nr][1] );
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
 	gl.disableVertexAttribArray(vTexCoord);
 	gl.uniform1i(useTexturesLoc, false);
 	
 	//USE THIS FOR TRANSLATION 
-	tz1 = mat4 (1.0, 0.0, 0.0, 10.0+x,
+	tz1 = mat4 (1.0, 0.0, 0.0, 9.0+x,
 			   0.0, 1.0, 0.0, 0.0+y,
 			   0.0, 0.0, 1.0, -10+z,
 			   0.0, 0.0, 0.0, 1.0);
@@ -393,7 +411,7 @@ function drawSphere(x,y,z) {
 	//USE THIS FOR TRANSLATION 
 	tz1 = mat4 (1.0, 0.0, 0.0, -cubeSize2+5+x,
 			   0.0, 1.0, 0.0, -cubeSize2+5+y,
-			   0.0, 0.0, 1.0, cubeSize2-50+z,
+			   0.0, 0.0, 1.0, cubeSize2-200+z,
 			   0.0, 0.0, 0.0, 1.0);
 			   
 	tz2 = mat4 (1.0, 0.0, 0.0, cubeSize2,
@@ -404,7 +422,7 @@ function drawSphere(x,y,z) {
 		
 	gl.uniform4fv(colorLoc, vec4(0.99, 0.72, 0.075, 1));
 	for( var i=0; i<index; i+=3)  {		
-		gl.drawArrays( gl.TRIANGLES, i, 3 );
+		gl.drawArrays( gl.TRIANGLE_STRIP, i, 3 );
 	}	  
 }
 
@@ -414,16 +432,17 @@ function initIndexBuffer() {
 	gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), gl.STATIC_DRAW);
 	
 }
-function initLightPostBuffers() {
-	
-	lpostBuffer = gl.createBuffer();
-	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer);
-	gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices2), gl.STATIC_DRAW );
-	
-	lpostBuffer2 = gl.createBuffer();
-	gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer2);
-	gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices3), gl.STATIC_DRAW );
-	
+function initLightPostBuffers(nrOfPosts) {
+	for(var i = 0; i < nrOfPosts; i++) {
+		lpostBuffer = gl.createBuffer();
+		gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer);
+		gl.bufferData( gl.ARRAY_BUFFER, flatten(lpostVertices[i][0]), gl.STATIC_DRAW );
+		
+		lpostBuffer2 = gl.createBuffer();
+		gl.bindBuffer( gl.ARRAY_BUFFER, lpostBuffer2);
+		gl.bufferData( gl.ARRAY_BUFFER, flatten(lpostVertices[i][1]), gl.STATIC_DRAW );
+		lpostBuffers.push(vec3(lpostBuffer, lpostBuffer2));
+	}
 }
 
 function initRoadBuffer() {
@@ -445,33 +464,36 @@ function initColorBuffer() {
 }
 
 
-function setupLightPostVertices() {
+function setupLightPostVertices(nrOfPosts) {
 
 	var lampPostHeight = 10;
 	var lampPostWidth = 1;
 	var lampPostDepth = 1;
-	vertices2 = [
-	   vec4(0.0	, 0.0	, 0, 1.0),
-	   vec4(0.0, lampPostHeight, 0, 1.0),
-	   vec4(lampPostWidth, lampPostHeight, 0, 1.0),
-	   vec4(lampPostWidth, 0, 0, 1.0),
-	   vec4(0.0, 0, -lampPostDepth, 1.0),
-	   vec4(0.0, lampPostHeight, -lampPostDepth, 1.0),
-	   vec4(lampPostWidth, lampPostHeight, -lampPostDepth, 1.0),
-	   vec4(lampPostWidth, 0, -lampPostDepth, 1.0)
-	];
-	
-	vertices3 = [	   
-	   //the upper end of the light post
-	   vec4(-2*lampPostWidth, lampPostHeight, 0, 1.0),
-	   vec4(-2*lampPostWidth, lampPostHeight+1, 0, 1.0),
-	   vec4(lampPostWidth, lampPostHeight+1, 0, 1.0),
-	   vec4(lampPostWidth, lampPostHeight, 0, 1.0),
-	   vec4(-2*lampPostWidth, lampPostHeight, -lampPostDepth, 1.0),
-	   vec4(-2*lampPostWidth, lampPostHeight+0.1, -lampPostDepth, 1.0),
-	   vec4(lampPostWidth, lampPostHeight+1, -lampPostDepth, 1.0), 
-	   vec4(lampPostWidth, lampPostHeight, -lampPostDepth, 1.0)
-	];
+	for(var i = 0; i < nrOfPosts; i++) {
+		vertices2 = [
+		   vec4(0.0	, 0.0	, 0 - i*10, 1.0),
+		   vec4(0.0, lampPostHeight, 0 - i*10, 1.0),
+		   vec4(lampPostWidth, lampPostHeight, 0 - i*10, 1.0),
+		   vec4(lampPostWidth, 0, 0 - i*10, 1.0),
+		   vec4(0.0, 0, -lampPostDepth - i*10, 1.0),
+		   vec4(0.0, lampPostHeight, -lampPostDepth - i*10, 1.0),
+		   vec4(lampPostWidth, lampPostHeight, -lampPostDepth - i*10, 1.0),
+		   vec4(lampPostWidth, 0, -lampPostDepth - i*10, 1.0)
+		];
+		
+		vertices3 = [	   
+		   //the upper end of the light post
+		   vec4(-2*lampPostWidth, lampPostHeight, 0 - i*10, 1.0),
+		   vec4(-2*lampPostWidth, lampPostHeight+1, 0 - i*10, 1.0),
+		   vec4(lampPostWidth, lampPostHeight+1, 0 - i*10, 1.0),
+		   vec4(lampPostWidth, lampPostHeight, 0 - i*10, 1.0),
+		   vec4(-2*lampPostWidth, lampPostHeight, -lampPostDepth - i*10, 1.0),
+		   vec4(-2*lampPostWidth, lampPostHeight+0.1, -lampPostDepth - i*10, 1.0),
+		   vec4(lampPostWidth, lampPostHeight+1, -lampPostDepth - i*10, 1.0), 
+		   vec4(lampPostWidth, lampPostHeight, -lampPostDepth - i*10, 1.0)
+		];
+		lpostVertices.push([vertices2, vertices3]);
+	}
 }
 
 function initVColor() {
@@ -505,9 +527,9 @@ function setupTexture() {
 	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
 	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
- 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
- 	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-	//gl.generateMipmap( gl.TEXTURE_2D );
+ 	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+ 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	gl.generateMipmap( gl.TEXTURE_2D );
 	gl.uniform1i(gl.getUniformLocation(program, "texMap"), 0);
 }
 
@@ -551,15 +573,43 @@ function calculateLightProducts() {
 }
 
 function initNormalsBuffer() {
-	var nBuffer = gl.createBuffer();
+
+	nBuffer2 = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer2);
+	lampNormalsArray = [
+		0, 0, 1,
+		0, 0, 1,
+		1, 0, 0,
+		1, 0, 0,
+		0, -1, 0,
+		0, -1, 0,
+		0, 1, 0,
+		0, 1, 0,
+		0, 0, -1,
+		0, 0, -1,
+		-1, 0, 0,
+		-1, 0, 0
+	];
+	gl.bufferData( gl.ARRAY_BUFFER, flatten(lampNormalsArray), gl.STATIC_DRAW );
+	
+	nBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer);
     gl.bufferData( gl.ARRAY_BUFFER, flatten(normalsArray), gl.STATIC_DRAW );
+	
+	
 }
 
 function initVNormal() {
     var vNormal = gl.getAttribLocation( program, "vNormal" );
     gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vNormal);
+	
+	gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer);
+	gl.enableVertexAttribArray( vNormal);
+	
+	
+	gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer2);
+	gl.enableVertexAttribArray( vNormal);
 }
 
 function setupProjections(tz1, tz2) {
