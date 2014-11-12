@@ -14,13 +14,6 @@ var numTimesToSubdivide = 4;
 
 var cubeSize = 10;
 var cubeSize2 = cubeSize / 2.0;
-var windowMin = -cubeSize2;
-var windowMax = cubeSize + cubeSize2;
-
-var xAxis = 0;
-var yAxis = 1;
-var zAxis = 2;
-var axis = 0;
 
 var projection;
 var modelView;
@@ -53,8 +46,6 @@ var vNormal;
 var cBuffer;
 var vColor;
 	
-var numVertices = 36;
-
 var spherePointsArray = [];
 var normalsArray = [];
 var lampNormalsArray = [];
@@ -66,7 +57,6 @@ var numRows = 8;
 var numCols = 8;
 var myTexels = new Uint8Array(4*texSize*texSize);
 
-var shootingBuffer;
 
 var vertices = [
 	   vec4(0.0, 0.0-10, cubeSize, 1.0),
@@ -118,36 +108,24 @@ colors = [
 	   5, 4, 0, 0, 1, 5   // left face
 	];
 
-/*
-normalsArray.push([0, 0, 1, 1]);
-normalsArray.push([1, 0, 0, 1]);
-normalsArray.push([0, -1, 0, 1]);
-normalsArray.push([0, 1, 0, 1]);
-normalsArray.push([0, 0, -1, 1]);
-normalsArray.push([-1, 0, 0, 1]);
-*/
-
 var va = vec4(0.0, 0.0, -1.0, 1);
 var vb = vec4(0.0, 0.942809, 0.333333, 1);
 var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
 var vd = vec4(0.816497, -0.471405, 0.333333, 1);
     
-var lightPosition = vec4(30.0, 100.0, -100.0, 0.0 );
+var lightPosition = vec4(30.0, 10.0, -100.0, 0.0 );
 var lightAmbient = vec4(0.8, 0.8, 0.8, 1.0 );
 var lightDiffuse = vec4( 1, 1, 1, 1.0 );
-var lightSpecular = vec4( 0.51, 0.51, 0.51, 1.0 );
+var lightSpecular = vec4( 0.7, 0.7, 0.7, 1.0 );
 
-var materialAmbient = vec4( 1.0, 0.0, 1.0, 1.0 );
-var materialDiffuse = vec4( 1.0, 0.8, 0.0, 1.0 );
-var materialSpecular = vec4( 1.0, 0.8, 0.0, 1.0 );
-var materialShininess = 100.0;
+var materialAmbient = vec4( 1.0, 0.5, 1.0, 1.0 );
+var materialDiffuse = vec4( 1.0, 0.8, 0.3, 1.0 );
+var materialSpecular = vec4( 1.0, 0.8, 0.7, 1.0 );
+var materialShininess = 30.0;
 
 var tex;
 var texture;
 
-
-var thetaLoc;
-var theta = [];
 var lookx = 5;
 var looky = 5;
 
@@ -186,34 +164,16 @@ function tetrahedron(a, b, c, d, n) {
     divideTriangle(a, c, d, n);
 }
 
-var roadTexture;
-var roadImage;
-
 function quad(a, b, c, d) {
-	
-     lampNormalsArray.push(vertices[a]); 
-     colorsArray.push(vertexColors[a]); 
-	 texCoordsArray.push(texCoord[0]);
+	texCoordsArray.push(texCoord[0]);
 	 
-     lampNormalsArray.push(vertices[b]); 
-     colorsArray.push(vertexColors[a]); 
-	 texCoordsArray.push(texCoord[1]);
+	texCoordsArray.push(texCoord[1]);
 	 
-     lampNormalsArray.push(vertices[c]); 
-     colorsArray.push(vertexColors[a]);    
-	 texCoordsArray.push(texCoord[2]);
-	 
-     lampNormalsArray.push(vertices[a]); 
-     colorsArray.push(vertexColors[a]); 
-	 texCoordsArray.push(texCoord[0]);
+    texCoordsArray.push(texCoord[2]);
+	texCoordsArray.push(texCoord[0]);
 
-     lampNormalsArray.push(vertices[c]); 
-     colorsArray.push(vertexColors[a]); 
-	 texCoordsArray.push(texCoord[2]);
-
-     lampNormalsArray.push(vertices[d]); 
-     colorsArray.push(vertexColors[a]); 
-	 texCoordsArray.push(texCoord[3]);
+    texCoordsArray.push(texCoord[2]);
+	texCoordsArray.push(texCoord[3]);
 }
 
 // Each face determines two triangles
@@ -229,6 +189,11 @@ function colorCube()
 
 window.onkeydown = function(e) {
 	var key = e.keyCode ? e.keyCode : e.which;
+	
+	/*
+	 * when an arrow key is pressed - translate everything else.
+	 * when WASD is pressed, change lookAt parameters 
+	 */
 	if(key == 37) {
 		transx += 1;
 	} else if(key == 38) {
@@ -262,26 +227,24 @@ window.onload = function init()
     //  Configure WebGL
     gl.viewport( 0, 0, canvas.width, canvas.height );
 	aspect = canvas.width / canvas.height;
-    gl.clearColor( 0.2, 0.2, 0.7, 1.0 );
+    gl.clearColor( 0.3, 0.3, 0.8, 1.0 );
 	gl.enable(gl.DEPTH_TEST);
 	
     //  Load shaders and initialize attribute buffers    
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
-	
-	theta[0] = 0.0;
-	theta[1] = 0.0;
-	theta[2] = 0.0;	
-	thetaLoc = gl.getUniformLocation (program, "theta");
-	
-	
+		
+	//Initialize the texels and textures
 	setupTexels();
 	setupTexture();
 	    
+	//Get all the locations of the uniforms from the shader
 	getUniformLocs();
 	
+	//Calculate the needed products to be able to implement lighting
 	calculateLightProducts();
 		
+	//Create the sphere and initialize the buffer
 	tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
 	initSphereBuffer();
 	
@@ -289,32 +252,25 @@ window.onload = function init()
 	colorCube();
 	initRoadBuffer();
 	
+	//Create the light post vertices and initialize the buffers
 	setupLightPostVertices(30);
 	initLightPostBuffers(30);
 	
 	initVPosition();
-	
-	initColorBuffer();
-    initVColor();
+	initIndexBuffer();
 	
 	initTexBuffer();
 	initVTexCoord();
 	
-	initIndexBuffer();
 	initNormalsBuffer();
     initVNormal();
-	
     render(0, 0, 0);
 };
 function render(x,y,z)
-{	
-	
-	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
-	gl.disableVertexAttribArray( vNormal);
-	gl.uniform3fv(thetaLoc, flatten(theta));
+{		
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	drawSphere(x,y,z); 
-	drawRoad(x,y,z);	
+	drawRoad(x,y,z);
 	for(var i = 0; i < lpostBuffers.length; i++)
 		drawLampPost(x,y,z,i);		
 };
@@ -356,8 +312,7 @@ function drawLampPostBottom(x,y,z, nr) {
 	gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
 	gl.disableVertexAttribArray(vTexCoord);
 	gl.uniform1i(useTexturesLoc, false);
-	
-	
+		
 	//USE THIS FOR TRANSLATION 
 	tz1 = mat4 (1.0, 0.0, 0.0, 9.0+x,
 			   0.0, 1.0, 0.0, 0.0+y,
@@ -411,7 +366,7 @@ function drawSphere(x,y,z) {
 	//USE THIS FOR TRANSLATION 
 	tz1 = mat4 (1.0, 0.0, 0.0, -cubeSize2+5+x,
 			   0.0, 1.0, 0.0, -cubeSize2+5+y,
-			   0.0, 0.0, 1.0, cubeSize2-200+z,
+			   0.0, 0.0, 1.0, cubeSize2-10+z,
 			   0.0, 0.0, 0.0, 1.0);
 			   
 	tz2 = mat4 (1.0, 0.0, 0.0, cubeSize2,
@@ -455,14 +410,8 @@ function initSphereBuffer() {
 	sphereBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, sphereBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, flatten(spherePointsArray), gl.STATIC_DRAW);
+	gl.enableVertexAttribArray( vNormal);
 }
-
-function initColorBuffer() {
-	cBuffer = gl.createBuffer();
-    gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(colorsArray), gl.STATIC_DRAW );
-}
-
 
 function setupLightPostVertices(nrOfPosts) {
 
@@ -488,7 +437,7 @@ function setupLightPostVertices(nrOfPosts) {
 		   vec4(lampPostWidth, lampPostHeight+1, 0 - i*10, 1.0),
 		   vec4(lampPostWidth, lampPostHeight, 0 - i*10, 1.0),
 		   vec4(-2*lampPostWidth, lampPostHeight, -lampPostDepth - i*10, 1.0),
-		   vec4(-2*lampPostWidth, lampPostHeight+0.1, -lampPostDepth - i*10, 1.0),
+		   vec4(-2*lampPostWidth, lampPostHeight+1, -lampPostDepth - i*10, 1.0),
 		   vec4(lampPostWidth, lampPostHeight+1, -lampPostDepth - i*10, 1.0), 
 		   vec4(lampPostWidth, lampPostHeight, -lampPostDepth - i*10, 1.0)
 		];
@@ -496,11 +445,6 @@ function setupLightPostVertices(nrOfPosts) {
 	}
 }
 
-function initVColor() {
-	//vColor = gl.getAttribLocation( program, "vColor" );
-	//gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
-    //gl.enableVertexAttribArray( vColor);
-}
 
 function initTexBuffer() {
 	tBuffer = gl.createBuffer();
@@ -523,11 +467,7 @@ function setupTexture() {
 	texture = gl.createTexture();
 	gl.bindTexture (gl.TEXTURE_2D, texture);
 	gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, texSize, texSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, myTexels);
-	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
-	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
- 	//gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
  	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 	gl.generateMipmap( gl.TEXTURE_2D );
 	gl.uniform1i(gl.getUniformLocation(program, "texMap"), 0);
@@ -577,39 +517,26 @@ function initNormalsBuffer() {
 	nBuffer2 = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer2);
 	lampNormalsArray = [
-		0, 0, 1,
-		0, 0, 1,
-		1, 0, 0,
-		1, 0, 0,
-		0, -1, 0,
-		0, -1, 0,
-		0, 1, 0,
-		0, 1, 0,
-		0, 0, -1,
-		0, 0, -1,
-		-1, 0, 0,
-		-1, 0, 0
+		0, 0, 1, 1, 	//front
+		1, 0, 0, 1, 	//right
+		0, -1, 0, 1, 	//bottom		
+		0, 1, 0, 1 , 	//up
+		0, 0, -1, 1, 	//back
+		-1, 0, 0, 1, 	//left
 	];
 	gl.bufferData( gl.ARRAY_BUFFER, flatten(lampNormalsArray), gl.STATIC_DRAW );
+	gl.enableVertexAttribArray( vNormal);
 	
 	nBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer);
     gl.bufferData( gl.ARRAY_BUFFER, flatten(normalsArray), gl.STATIC_DRAW );
-	
-	
+	gl.enableVertexAttribArray( vNormal);
 }
 
 function initVNormal() {
     var vNormal = gl.getAttribLocation( program, "vNormal" );
-    gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
-    gl.enableVertexAttribArray( vNormal);
 	
-	gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer);
-	gl.enableVertexAttribArray( vNormal);
-	
-	
-	gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer2);
-	gl.enableVertexAttribArray( vNormal);
+	gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
 }
 
 function setupProjections(tz1, tz2) {
