@@ -14,7 +14,7 @@ var vertices = [];
 var colors = [];
 var indices = [];
 
-var numTimesToSubdivide = 2;
+var numTimesToSubdivide = 4;
 
 var cubeSize = 10;
 var cubeSize2 = cubeSize / 2.0;
