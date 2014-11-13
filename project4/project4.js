@@ -1,4 +1,8 @@
+/*
+Authors: Andreas Palsson & Igor Ramon
+*/
 
+var rotate = [false, false, false];
 var canvas;
 var gl;
 var colorLoc;
@@ -10,7 +14,7 @@ var vertices = [];
 var colors = [];
 var indices = [];
 
-var numTimesToSubdivide = 4;
+var numTimesToSubdivide = 2;
 
 var cubeSize = 10;
 var cubeSize2 = cubeSize / 2.0;
@@ -19,6 +23,8 @@ var projection;
 var modelView;
 var aspect;
 
+var theta = [0, 0, 0];
+var thetaLoc;
 
 var index = 0;
 
@@ -59,14 +65,14 @@ var myTexels = new Uint8Array(4*texSize*texSize);
 
 
 var vertices = [
-	   vec4(0.0, 0.0-10, cubeSize, 1.0),
+	   vec4(0.0, -10, cubeSize, 1.0),
 	   vec4(0.0, cubeSize-10, cubeSize, 1.0),
 	   vec4(cubeSize, cubeSize-10, cubeSize, 1.0),
-	   vec4(cubeSize, 0.0-10, cubeSize, 1.0),
-	   vec4(0.0, 0.0-10, 0.0-1000, 1.0),
-	   vec4(0.0, cubeSize-10, 0.0-1000, 1.0),
-	   vec4(cubeSize, cubeSize-10, 0.0-1000, 1.0),
-	   vec4(cubeSize, 0.0-10, 0.0-1000, 1.0)
+	   vec4(cubeSize, -10, cubeSize, 1.0),
+	   vec4(0.0, -10, -1000, 1.0),
+	   vec4(0.0, cubeSize-10, -1000, 1.0),
+	   vec4(cubeSize, cubeSize-10, -1000, 1.0),
+	   vec4(cubeSize, 10, -1000, 1.0)
 	];
 
 var vertexColors = [
@@ -113,9 +119,9 @@ var vb = vec4(0.0, 0.942809, 0.333333, 1);
 var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
 var vd = vec4(0.816497, -0.471405, 0.333333, 1);
     
-var lightPosition = vec4(30.0, 10.0, -100.0, 0.0 );
+var lightPosition = vec4(30.0, 1.0, -50.0, 0.0 );
 var lightAmbient = vec4(0.8, 0.8, 0.8, 1.0 );
-var lightDiffuse = vec4( 1, 1, 1, 1.0 );
+var lightDiffuse = vec4( 0.7, 0.7, 0.7, 1.0 );
 var lightSpecular = vec4( 0.7, 0.7, 0.7, 1.0 );
 
 var materialAmbient = vec4( 1.0, 0.5, 1.0, 1.0 );
@@ -166,12 +172,9 @@ function tetrahedron(a, b, c, d, n) {
 
 function quad(a, b, c, d) {
 	texCoordsArray.push(texCoord[0]);
-	 
-	texCoordsArray.push(texCoord[1]);
-	 
+	texCoordsArray.push(texCoord[1]);	 
     texCoordsArray.push(texCoord[2]);
 	texCoordsArray.push(texCoord[0]);
-
     texCoordsArray.push(texCoord[2]);
 	texCoordsArray.push(texCoord[3]);
 }
@@ -196,26 +199,47 @@ window.onkeydown = function(e) {
 	 */
 	if(key == 37) {
 		transx += 1;
+		
+		for(var i = 0; i < rotate.length; i++)
+			rotate[i] =false;
 	} else if(key == 38) {
 		transz += 1;
+		
+		for(var i = 0; i < rotate.length; i++)
+			rotate[i] =false;
 	} else if(key == 39) {
 		transx -= 1;
+		for(var i = 0; i < rotate.length; i++)
+			rotate[i] =false;
 	} else if(key == 40) {
 		transz -= 1;
+		for(var i = 0; i < rotate.length; i++)
+			rotate[i] =false;
 	} else if(key == 65) {
-		//theta[1] -= 10;
 		lookx -= 1;
+		for(var i = 0; i < rotate.length; i++)
+			rotate[i] =false;
 	} else if(key == 68) {
-		//theta[1] += 10;
 		lookx += 1;
+		for(var i = 0; i < rotate.length; i++)
+			rotate[i] =false;
 	} else if(key == 87) {
-		//theta[0] += 10;
 		looky += 1;
+		for(var i = 0; i < rotate.length; i++)
+			rotate[i] =false;
 	} else if(key == 83) {
-		//theta[0] -= 10;
 		looky -= 1;	
-	}	
-	render(transx,transy,transz);
+		for(var i = 0; i < rotate.length; i++)
+			rotate[i] =false;
+	} else if(key == 72) {
+		rotate[0] = !rotate[0];
+	} else if(key == 74) {
+		rotate[1] = !rotate[1];
+	} else if(key == 75) {
+		rotate[2] = !rotate[2];
+	}
+	
+	render();
 }
 window.onload = function init()
 {
@@ -264,15 +288,26 @@ window.onload = function init()
 	
 	initNormalsBuffer();
     initVNormal();
-    render(0, 0, 0);
+    render();
 };
-function render(x,y,z)
+function render()
 {		
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	drawSphere(x,y,z); 
-	drawRoad(x,y,z);
+	gl.uniform3fv (thetaLoc, flatten(theta));
+	drawSphere(transx, transy, transz); 
+	drawRoad(transx, transy, transz);
 	for(var i = 0; i < lpostBuffers.length; i++)
-		drawLampPost(x,y,z,i);		
+		drawLampPost(transx, transy, transz,i);	
+	if(rotate[0]) {
+		theta[0]++;
+		
+	} if(rotate[1]) {
+		theta[1]++;
+	} if (rotate[2]) {
+		theta[2]++;
+	}
+	if(rotate[1] || rotate[2] || rotate[0])
+		requestAnimFrame(render);
 };
 
 function drawRoad(x,y,z) {
@@ -493,6 +528,7 @@ function getUniformLocs() {
 	colorLoc = gl.getUniformLocation (program, "color");
 	modelViewLoc = gl.getUniformLocation (program, "modelView");
 	projectionLoc  = gl.getUniformLocation (program, "projection");
+	thetaLoc = gl.getUniformLocation(program, "theta");
 }
 
 function calculateLightProducts() {
@@ -513,7 +549,6 @@ function calculateLightProducts() {
 }
 
 function initNormalsBuffer() {
-
 	nBuffer2 = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer2);
 	lampNormalsArray = [
@@ -535,7 +570,6 @@ function initNormalsBuffer() {
 
 function initVNormal() {
     var vNormal = gl.getAttribLocation( program, "vNormal" );
-	
 	gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
 }
 
