@@ -1,0 +1,9 @@
+Enter your written solution to exercise 4.18 in this file.
+Be sure to include your name and section number in this document.
+Name: Andreas Palsson
+Section 02
+If the number of cores is greater than the number of kernel threads, then some of the cores will always be idle since nothing would be given to those cores. 
+
+If the number of cores is equal to the number of kernel threads, then all the cores can be used simultaneously. However if for some reason a kernel thread stops, a core will be unused.
+
+If the number of cores is less than the number of kernel threads, all of the cores can be used simultaneously, and there are kernel threads standing by if a core is a free.

@@ -1,0 +1,7 @@
+all: program1 program2
+
+program1: processes.c
+	gcc processes.c -o processes -Wall -c -g -lm
+
+program2: myCopy.c
+	gcc myCopy.c -o myCopy -Wall -c -g -lm
