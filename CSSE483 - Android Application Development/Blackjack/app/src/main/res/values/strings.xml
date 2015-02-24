@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blackjack</string>
+    <string name="dealer">Dealer</string>
+    <string name="player">Player</string>
+    <string name="cheat">Cheat</string>
+    <string name="make_your_move">Make your move!</string>
+    <string name="skip">Skip</string>
+    <string name="hit">Hit</string>
+    <string name="stand">Stand</string>
+    <string name="double_down">Double Down</string>
+    <string name="split">Split</string>
+    <string name="unknown_action">Unknown action</string>
+    <string name="ok">OK</string>
+    <string name="correct">Correct!</string>
+    <string name="incorrect">Incorrect</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+	
+    <string name="reset">Reset Statistics</string>
+    <string name="skip_message">Are you sure you want to skip this round?</string>
+	<string name="about">About Blackjack Trainer</string>
+	<string name="about_title">What is Blackjack Trainer?</string>
+	<string name="about_message">Blackjack trainer does NOT let you play blackjack.  You will not see what cards you draw as that is out of your control.  You will only be told if you take the correct action.  Your goal is perfect play 100% of the time.</string>
+	<string name="coach_advice">%1$s should %2$s\n</string>
+	<string name="percentage_correct">%1$d of %2$d correct (%3$.1f%%)</string>
+	<string name="round_to_string">%1$s %2$s vs %3$s</string>
+	<string name="make_your_move_title">What is the correct move?</string>
+</resources>
