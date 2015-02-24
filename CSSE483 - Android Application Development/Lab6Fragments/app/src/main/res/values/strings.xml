@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Lab6Fragments</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="fragment_one">Fragment One</string>
+    <string name="one">One</string>
+    <string name="fragment_two">Fragment Two</string>
+    <string name="two">Two</string>
+
+</resources>
