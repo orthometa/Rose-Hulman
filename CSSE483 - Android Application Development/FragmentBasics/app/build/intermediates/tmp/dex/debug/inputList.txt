@@ -1,0 +1,2 @@
+C:\Users\palssoa\AndroidStudioProjects\FragmentBasics\app\build\intermediates\classes\debug
+C:\Users\palssoa\AndroidStudioProjects\FragmentBasics\app\build\intermediates\pre-dexed\debug\support-v4-18.0.0-b01ae4b4ec4d70f02364e04995f96611d7dc9782.jar
