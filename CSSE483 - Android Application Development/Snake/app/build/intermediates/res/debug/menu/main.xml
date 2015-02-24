@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="wrap_content" android:layout_width="wrap_content">
+    <item android:id="@+id/left"
+        android:icon="@drawable/dpad_left"
+        android:showAsAction="always"
+        android:title="@string/new_game" />
+    <item android:id="@+id/right"
+        android:showAsAction="always"
+        android:icon="@drawable/dpad_right"
+        android:title="@string/new_game" />
+    <group android:id="@+id/overflow">
+        <item
+            android:id="@+id/resume"
+            android:title="@string/resume"/>
+        <item
+            android:id="@+id/speed"
+            android:title="@string/choose_speed">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item android:id="@+id/slow" android:title="@string/slow"/>
+                    <item android:id="@+id/medium" android:title="@string/medium"/>
+                    <item android:id="@+id/fast" android:title="@string/fast"/>
+                </group>
+            </menu>
+       </item>
+       <item android:id="@+id/settings" android:title="@string/settings"/>
+
+    </group>
+
+</menu><!-- From: file:/C:/Users/palssoa/AndroidStudioProjects/Snake/app/src/main/res/menu/main.xml -->
