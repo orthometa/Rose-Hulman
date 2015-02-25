@@ -1,9 +1,0 @@
-Andreas Palsson, Andrew Davidson
-2014-01-21
-
-1. Users should be prompted with a "SHELL> " to let them know that they can write commands in the shell. (40 minutes)
-2. Users should be able to use the type command in the shell. This command will load a file and print its contents. (1.5 hours)
-3. Users should be able to use the execute command in the shell. This command will execute a file. (20 minutes)
-4. Users should be shown a "Bad command"-message if they try to execute a command that doesn't exist. (10 mnutes)
-
-Total estimated time:  (2 Hrs 40 Mins)
