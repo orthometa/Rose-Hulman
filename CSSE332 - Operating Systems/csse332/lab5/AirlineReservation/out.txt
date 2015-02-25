@@ -1,0 +1,25 @@
+Customer id: 0,
+Seats: Coach,
+Number of seats: 1,
+Seats: 17, 
+
+Customer id: 4,
+Seats: First Class,
+Number of seats: 2,
+Seats: 5, 2, 
+
+Customer id: 2,
+Seats: Coach,
+Number of seats: 4,
+Seats: 34, 27, 35, 18, 
+
+Customer id: 3,
+Seats: Coach,
+Number of seats: 3,
+Seats: 19, 13, 16, 
+
+Customer id: 1,
+Seats: Coach,
+Number of seats: 10,
+Seats: 25, 22, 26, 9, 11, 12, 32, 20, 10, 28, 
+

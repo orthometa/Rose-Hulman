@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/repos/1415b-csse332-palssoa/!svn/ver/22/lab1/Inventory
+END
+inv.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/repos/1415b-csse332-palssoa/!svn/ver/15/lab1/Inventory/inv.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/repos/1415b-csse332-palssoa/!svn/ver/18/lab1/Inventory/Makefile
+END
+medium.txt
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/repos/1415b-csse332-palssoa/!svn/ver/4/lab1/Inventory/medium.txt
+END
+inv.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/repos/1415b-csse332-palssoa/!svn/ver/8/lab1/Inventory/inv.h
+END
+small.txt
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/repos/1415b-csse332-palssoa/!svn/ver/22/lab1/Inventory/small.txt
+END
+large.txt
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/repos/1415b-csse332-palssoa/!svn/ver/4/lab1/Inventory/large.txt
+END
+tokenizer.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/repos/1415b-csse332-palssoa/!svn/ver/4/lab1/Inventory/tokenizer.c
+END

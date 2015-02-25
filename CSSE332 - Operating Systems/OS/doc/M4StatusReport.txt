@@ -1,0 +1,22 @@
+Andreas Palsson, Andrew Davidson
+
+We accomplished all tasks for this milestone. We spent more time than we estimated on this milestone. We encountered problems that we did not expect due to faulty parsing of arguments passed in by the user. Because of this, copying files required a lot of work. We implemented the extra credit-feature, and you can now see file sizes (in sectors) when using dir.
+
+Time estimated:
+I want to be able to see the files on my operating system listed in the console (30 minutes)
+I want to be able to create a new text file and type in its contents (20 minutes)
+I want to be able to copy files (60 minutes)
+I want to be able to delete files  (80 minutes) 
+I want to be able to see the size of the files (in blocks) on my operating system (extra credit) (40 minutes)
+
+Total Time: (3 hours 50 minutes)
+
+
+Actual time:
+I want to be able to see the files on my operating system listed in the console (1 hour)
+I want to be able to create a new text file and type in its contents (1 hour)
+I want to be able to copy files (5 hours)
+I want to be able to delete files  (1 hour) 
+I want to be able to see the size of the files (in blocks) on my operating system (extra credit) (1 hour)
+
+Total Time: (8 hours)

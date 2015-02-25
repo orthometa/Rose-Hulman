@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/repos/1415b-csse332-palssoa/!svn/ver/97/Barbershop
+END
+SAMPLE_OUTPUT.txt
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/1415b-csse332-palssoa/!svn/ver/97/Barbershop/SAMPLE_OUTPUT.txt
+END
+sharedMemory.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/repos/1415b-csse332-palssoa/!svn/ver/97/Barbershop/sharedMemory.c
+END
+customer.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/repos/1415b-csse332-palssoa/!svn/ver/101/Barbershop/customer.c
+END
+utility.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/repos/1415b-csse332-palssoa/!svn/ver/97/Barbershop/utility.c
+END
+sharedMemory.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/repos/1415b-csse332-palssoa/!svn/ver/97/Barbershop/sharedMemory.h
+END
+utility.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/repos/1415b-csse332-palssoa/!svn/ver/97/Barbershop/utility.h
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/repos/1415b-csse332-palssoa/!svn/ver/97/Barbershop/Makefile
+END
+barbershopMain.c
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/repos/1415b-csse332-palssoa/!svn/ver/100/Barbershop/barbershopMain.c
+END
+barber.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/repos/1415b-csse332-palssoa/!svn/ver/100/Barbershop/barber.c
+END

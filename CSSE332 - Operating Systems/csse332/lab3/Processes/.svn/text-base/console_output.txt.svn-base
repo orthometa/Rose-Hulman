@@ -1,0 +1,203 @@
+------------------------- RUN 1 ----------------------------------
+addepladde@addepladde-VirtualBox:~/csse332/lab3/Processes$ ./processes 3 100000 Files.txt
+I am a child. My index: 2
+I am a child. My index: 1
+I am a child. My index: 3
+*************** About to copy file ***************
+*************** About to copy file ***************
+Read 16 chars from input file FileThree.txt.
+Read 16 chars from input file FileTwo.txt.
+Copied 16 chars to output file FileTwo_2_out.txt.
+Copied 16 chars to output file FileThree_3_out.txt.
+*************** Finish copying file ***************
+Time for process 3 = 271419 microseconds
+*************** Finish copying file ***************
+Time for process 2 = 282795 microseconds
+*************** About to copy file ***************
+Read 16 chars from input file FileOne.txt.
+Copied 16 chars to output file FileOne_1_out.txt.
+*************** Finish copying file ***************
+Time for process 1 = 328717 microseconds
+This is the parent process. All of the children have finished.
+Time for parent thread from start to end: 1873889 microseconds
+
+
+
+
+
+
+------------------------- RUN 2 ----------------------------------
+addepladde@addepladde-VirtualBox:~/csse332/lab3/Processes$ ./processes 9 400000 Files.txt
+I am a child. My index: 8
+I am a child. My index: 9
+I am a child. My index: 7
+*************** About to copy file ***************
+Read 16 chars from input file FileFour.txt.
+Copied 16 chars to output file FileFour_8_out.txt.
+*************** About to copy file ***************
+*************** Finish copying file ***************
+Time for process 8 = 156200 microseconds
+*************** About to copy file ***************
+Read 16 chars from input file FileOne.txt.
+Copied 16 chars to output file FileOne_9_out.txt.
+*************** Finish copying file ***************
+Time for process 9 = 145981 microseconds
+Read 16 chars from input file FileThree.txt.
+Copied 16 chars to output file FileThree_7_out.txt.
+*************** Finish copying file ***************
+Time for process 7 = 210383 microseconds
+I am a child. My index: 4
+I am a child. My index: 5
+I am a child. My index: 6
+*************** About to copy file ***************
+Read 16 chars from input file FileFour.txt.
+Copied 16 chars to output file FileFour_4_out.txt.
+*************** Finish copying file ***************
+Time for process 4 = 1316871 microseconds
+*************** About to copy file ***************
+*************** About to copy file ***************
+Read 16 chars from input file FileOne.txt.
+Read 16 chars from input file FileTwo.txt.
+Copied 16 chars to output file FileOne_5_out.txt.
+*************** Finish copying file ***************
+Time for process 5 = 1356525 microseconds
+Copied 16 chars to output file FileTwo_6_out.txt.
+*************** Finish copying file ***************
+Time for process 6 = 1358511 microseconds
+I am a child. My index: 2
+I am a child. My index: 3
+*************** About to copy file ***************
+Read 16 chars from input file FileTwo.txt.
+Copied 16 chars to output file FileTwo_2_out.txt.
+*************** About to copy file ***************
+Read 16 chars from input file FileThree.txt.
+*************** Finish copying file ***************
+Time for process 2 = 2258576 microseconds
+Copied 16 chars to output file FileThree_3_out.txt.
+*************** Finish copying file ***************
+Time for process 3 = 2254602 microseconds
+I am a child. My index: 1
+*************** About to copy file ***************
+Read 16 chars from input file FileOne.txt.
+Copied 16 chars to output file FileOne_1_out.txt.
+*************** Finish copying file ***************
+Time for process 1 = 3153709 microseconds
+This is the parent process. All of the children have finished.
+Time for parent thread from start to end: 3445546 microseconds
+
+
+
+
+
+
+------------------------- RUN 3 ----------------------------------
+
+addepladde@addepladde-VirtualBox:~/csse332/lab3/Processes$ ./processes 3 10000000 Files.txt
+I am a child. My index: 3
+*************** About to copy file ***************
+Read 16 chars from input file FileThree.txt.
+Copied 16 chars to output file FileThree_3_out.txt.
+*************** Finish copying file ***************
+Time for process 3 = 146021 microseconds
+I am a child. My index: 2
+*************** About to copy file ***************
+Read 16 chars from input file FileTwo.txt.
+Copied 16 chars to output file FileTwo_2_out.txt.
+*************** Finish copying file ***************
+Time for process 2 = 9085977 microseconds
+I am a child. My index: 1
+*************** About to copy file ***************
+Read 16 chars from input file FileOne.txt.
+Copied 16 chars to output file FileOne_1_out.txt.
+*************** Finish copying file ***************
+Time for process 1 = 19137287 microseconds
+This is the parent process. All of the children have finished.
+Time for parent thread from start to end: 20284643 microseconds
+addepladde@addepladde-VirtualBox:~/csse332/lab3/Processes$ ./processes 3 1000000 Files.txt
+I am a child. My index: 2
+I am a child. My index: 3
+*************** About to copy file ***************
+*************** About to copy file ***************
+Read 16 chars from input file FileTwo.txt.
+Copied 16 chars to output file FileTwo_2_out.txt.
+Read 16 chars from input file FileThree.txt.
+Copied 16 chars to output file FileThree_3_out.txt.
+*************** Finish copying file ***************
+Time for process 3 = 229533 microseconds
+*************** Finish copying file ***************
+Time for process 2 = 258272 microseconds
+I am a child. My index: 1
+*************** About to copy file ***************
+Read 16 chars from input file FileOne.txt.
+Copied 16 chars to output file FileOne_1_out.txt.
+*************** Finish copying file ***************
+Time for process 1 = 1075082 microseconds
+This is the parent process. All of the children have finished.
+Time for parent thread from start to end: 2186958 microseconds
+
+
+
+
+
+
+
+------------------------- RUN 4 ----------------------------------
+
+addepladde@addepladde-VirtualBox:~/csse332/lab3/Processes$ ./processes 9 1000 Files.txt
+I am a child. My index: 1
+I am a child. My index: 2
+I am a child. My index: 3
+I am a child. My index: 4
+I am a child. My index: 5
+I am a child. My index: 6
+I am a child. My index: 7
+I am a child. My index: 8
+*************** About to copy file ***************
+I am a child. My index: 9
+*************** About to copy file ***************
+Read 16 chars from input file FileOne.txt.
+Copied 16 chars to output file FileOne_1_out.txt.
+Read 16 chars from input file FileTwo.txt.
+*************** Finish copying file ***************
+Time for process 1 = 797980 microseconds
+*************** About to copy file ***************
+*************** About to copy file ***************
+Read 16 chars from input file FileThree.txt.
+Copied 16 chars to output file FileTwo_2_out.txt.
+*************** Finish copying file ***************
+Time for process 2 = 871404 microseconds
+Read 16 chars from input file FileFour.txt.
+*************** About to copy file ***************
+Copied 16 chars to output file FileThree_3_out.txt.
+*************** Finish copying file ***************
+Time for process 3 = 879839 microseconds
+Read 16 chars from input file FileTwo.txt.
+Copied 16 chars to output file FileFour_4_out.txt.
+*************** Finish copying file ***************
+Time for process 4 = 903606 microseconds
+Copied 16 chars to output file FileTwo_6_out.txt.
+*************** Finish copying file ***************
+*************** About to copy file ***************
+Read 16 chars from input file FileOne.txt.
+*************** About to copy file ***************
+Time for process 6 = 866488 microseconds
+Read 16 chars from input file FileThree.txt.
+*************** About to copy file ***************
+Copied 16 chars to output file FileOne_5_out.txt.
+*************** Finish copying file ***************
+Time for process 5 = 957306 microseconds
+*************** About to copy file ***************
+Read 16 chars from input file FileOne.txt.
+Copied 16 chars to output file FileOne_9_out.txt.
+Copied 16 chars to output file FileThree_7_out.txt.
+*************** Finish copying file ***************
+*************** Finish copying file ***************
+Read 16 chars from input file FileFour.txt.
+Time for process 9 = 828248 microseconds
+Time for process 7 = 913469 microseconds
+Copied 16 chars to output file FileFour_8_out.txt.
+*************** Finish copying file ***************
+Time for process 8 = 892294 microseconds
+This is the parent process. All of the children have finished.
+Time for parent thread from start to end: 2785852 microseconds
+

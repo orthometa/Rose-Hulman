@@ -1,0 +1,10 @@
+Customer id: 1,
+Seats: Coach,
+Number of seats: 1,
+Seats: 16, 
+
+Customer id: 0,
+Seats: Coach,
+Number of seats: 2,
+Seats: 9, 12, 
+

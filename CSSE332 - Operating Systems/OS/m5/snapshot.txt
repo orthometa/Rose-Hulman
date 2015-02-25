@@ -1,0 +1,25 @@
+$Revision: 1.257 $ $Date: 2011/01/26 09:52:02 $
+Options: apmbios pcibios pnpbios eltorito rombios32
+
+
+Press F12 for boot menu.
+
+Booting from Floppy...
+SHELL> delete shell
+File deleted
+SHELL> dir
+
+Current Files:
+
+  KERNEL : 10 sectors
+  messag : 1 sector
+  messg2 : 21 sectors
+  tstprg : 1 sector
+  tstpr2 : 1 sector
+
+SHELL> create shell
+FILE > yolo yoloyloylo
+FILE >
+SHELL> execute tstpr2
+If you see this message, tstpr2 is running correctly!
+ß

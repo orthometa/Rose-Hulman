@@ -1,0 +1,20 @@
+Andreas Palsson, Andrew Davidson
+
+We accomplished all tasks for this milestone. We spent more time than we estimated on this milestone. We encountered problems when we tried to call interrupts with arguments like "shell\0". We solved this by declaring a char array and declaring each of the elmeents in the char array one by one. Because of this error, we spent a lot of time trying to figure out why our shell didn't reload after program termination.
+
+
+Time estimated:
+1. Users should be prompted with a "SHELL> " to let them know that they can write commands in the shell. (40 minutes)
+2. Users should be able to use the type command in the shell. This command will load a file and print its contents. (1.5 hours)
+3. Users should be able to use the execute command in the shell. This command will execute a file. (20 minutes)
+4. Users should be shown a "Bad command"-message if they try to execute a command that doesn't exist. (10 mnutes)
+ 
+Total estimated time: (2 Hrs 40 Mins)
+
+Actual time spent:
+1. Users should be prompted with a "SHELL> " to let them know that they can write commands in the shell. (40 minutes)
+2. Users should be able to use the type command in the shell. This command will load a file and print its contents. (1.5 hours)
+3. Users should be able to use the execute command in the shell. This command will execute a file. (1.5 hours)
+4. Users should be shown a "Bad command"-message if they try to execute a command that doesn't exist. (1 hr)
+
+Total time spent: (4 Hrs 40 Mins)

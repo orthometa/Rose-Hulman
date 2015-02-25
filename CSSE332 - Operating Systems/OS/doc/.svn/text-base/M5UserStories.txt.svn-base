@@ -1,0 +1,10 @@
+Andreas Palsson, Andrew Davidson
+2014-02-04
+
+1. Users should be able to run multiple processes at once. (3 hours)
+2. When users start a program, the calling program (the shell) should still run, so the user should be able to run commands in the shell while running other programs. (1.5 hours)
+3. Users should be able to kill processes. (1 hour)
+4. Users should see file sizes when using the dir-command. (already done)
+5. Users should be able to use the help-command. This command will list all the available commands. (1 hour)
+
+Total time estimated: 6.5 hours
