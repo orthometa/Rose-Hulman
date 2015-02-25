@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<ImageView
+		android:layout_width="fill_parent"
+		android:src="@drawable/blackjack_table"
+		android:scaleType="fitXY"
+		android:layout_height="wrap_content"></ImageView>
+	<RelativeLayout
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:paddingLeft="15dp"
+		android:paddingRight="15dp">
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:textSize="18sp"
+			android:layout_marginBottom="3dp"
+			android:text="@string/dealer"
+			android:id="@+id/dealer_text_view" android:layout_marginTop="30dp"></TextView>
+		<TableLayout
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:stretchColumns="*"
+			android:layout_width="200dp"
+			android:layout_below="@+id/dealer_text_view">
+			<TableRow
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent">
+				<ImageView
+					android:id="@+id/dealer_card_1"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@drawable/playing_card_club_2"
+					android:layout_gravity="center"></ImageView>
+				<ImageView
+					android:id="@+id/dealer_card_2"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:src="@drawable/playing_card_back"></ImageView>
+			</TableRow>
+		</TableLayout>
+		<View
+			android:id="@+id/center_view"
+			android:layout_centerInParent="true" android:layout_height="fill_parent" android:layout_width="3dp"></View>
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:textSize="18sp"
+			android:text="@string/player"
+			android:id="@+id/player_text_view"
+			android:layout_marginLeft="30dp" android:layout_toRightOf="@+id/center_view" android:layout_alignTop="@+id/dealer_text_view"></TextView>
+		<TableLayout
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:stretchColumns="*"
+
+			android:layout_width="200dp" android:layout_centerVertical="true" android:layout_below="@+id/player_text_view" android:layout_alignLeft="@+id/player_text_view">
+			<TableRow
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content">
+				<ImageView
+					android:id="@+id/player_card_1"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@drawable/playing_card_club_3"
+					android:layout_gravity="center"></ImageView>
+				<ImageView
+					android:id="@+id/player_card_2"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@drawable/playing_card_club_6"
+					android:layout_gravity="center"></ImageView>
+			</TableRow>
+
+		</TableLayout>
+		<TableLayout
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:stretchColumns="*"
+			android:layout_alignParentBottom="true"
+			android:layout_width="fill_parent" android:layout_marginBottom="10dp">
+			<TableRow
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent">
+				<Button
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:id="@+id/cheat_button"
+					android:text="@string/cheat" android:textSize="18sp" android:padding="5dp"></Button>
+				<Button
+					android:layout_height="wrap_content"
+					android:layout_width="fill_parent"
+					android:id="@+id/make_your_move_button"
+					android:text="@string/make_your_move" android:textSize="18sp" android:padding="5dp"></Button>
+				<Button
+					android:layout_height="wrap_content"
+					android:layout_width="fill_parent"
+					android:text="@string/skip"
+					android:id="@+id/skip_button" android:textSize="18sp" android:padding="5dp"></Button>
+			</TableRow>
+		</TableLayout>
+	</RelativeLayout>
+</FrameLayout>

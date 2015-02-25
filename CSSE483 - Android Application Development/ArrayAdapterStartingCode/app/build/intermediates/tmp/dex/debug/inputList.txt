@@ -1,0 +1,2 @@
+C:\Users\palssoa\AndroidStudioProjects\ArrayAdapterStartingCode\app\build\intermediates\classes\debug
+C:\Users\palssoa\AndroidStudioProjects\ArrayAdapterStartingCode\app\build\intermediates\pre-dexed\debug\support-v4-19.1.0-b4f04bc9136c88374f5e7e81bf58d0b5584bb315.jar

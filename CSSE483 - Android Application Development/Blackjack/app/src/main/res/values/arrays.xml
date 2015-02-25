@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="player_actions_array">
+		<item>@string/hit</item>
+		<item>@string/stand</item>
+		<item>@string/double_down</item>
+		<item>@string/split</item>
+	</string-array>
+</resources>

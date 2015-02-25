@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ArrayAdapter XYZ</string>
+    <string name="activity_main_button_add">Add View</string>
+
+</resources>

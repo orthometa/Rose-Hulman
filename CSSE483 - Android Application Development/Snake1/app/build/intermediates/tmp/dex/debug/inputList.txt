@@ -1,0 +1,1 @@
+C:\Users\palssoa\AndroidStudioProjects\Snake1\app\build\intermediates\classes\debug

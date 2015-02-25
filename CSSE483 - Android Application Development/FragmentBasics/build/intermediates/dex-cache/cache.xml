@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\palssoa\Desktop\adt-bundle-windows-x86_64-20140702\sdk\extras\android\m2repository\com\android\support\support-v4\18.0.0\support-v4-18.0.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="44ec51e9d395a47aab135e5e1b556c0007442156">
+        <dex dex="C:\Users\palssoa\AndroidStudioProjects\FragmentBasics\app\build\intermediates\pre-dexed\debug\support-v4-18.0.0-b01ae4b4ec4d70f02364e04995f96611d7dc9782.jar" />
+    </item>
+
+</items>
